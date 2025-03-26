@@ -11,51 +11,46 @@ namespace RoadCrossing
 {
 	/// <summary>
 	/// This script controls the game, starting it, following game progress, and finishing it with game over.
-	/// It also creates lanes with moving objects and items as the palyer progresses.
+	/// It also creates level lanes as the player progresses.
 	/// </summary>
 	public class RCGGameController : MonoBehaviour
 	{
-		// The player object
+		// The player
 		public Transform[] playerObjects;
 		public int currentPlayer;
 
-		//The number of lives the player has. When the player dies, it loses one life. When lives reach 0, it's game over.
+		//Player lives. Death –> -1 life. 0 lifes = game over.
 		public int lives = 1;
-		
-		//The text object that shows how many lives we have left
 		public Transform livesText;
 
-		//How many seconds to wait before respawning after the player dies
+		//Respawn things: respawn time, respawn skin
 		public float respawnTime = 1.2f;
-
-		//The object that replaces the player while respawning
 		public Transform respawnObject;
 		static Vector3 targetPosition;
 	
 		// The camera that follows the player
 		public Transform cameraObject;
 
-		//The object that holds the movement buttons. If swipe controls are used, this object is deactivated
+		//Is active only if swipes aren't used
 		public Transform moveButtonsObject;
 		
-		//Should swipe controls be used instead of click/tap controls?
+		//Swipe or click/tap?
 		public bool swipeControls = false;
 		
-		//The start and end positions of the touches, when using swipe controls
+		//The start and end positions of the touches for swipe control
 		internal Vector3 swipeStart;
 		internal Vector3 swipeEnd;
 		
-		//The swipe distance; How far we need to swipe before detecting movement
+		//How far we need to swipe before detecting movement
 		public float swipeDistance = 10;
 
 		//How long to wait before the swipe command is cancelled
 		public float swipeTimeout = 1;
 		internal float swipeTimeoutCount;
 
-		// An array of powerups that can be activated
+		// An array of activated powerups
 		public Powerup[] powerups;
 
-		// Stop the powerups when the player dies. Otherwise, the powerups will only be stopped on game over
 		public bool stopPowerupsOnDeath = false;
 	
 		// An array of lanes that randomly appear as the player moves forward
@@ -137,20 +132,13 @@ namespace RoadCrossing
 		internal bool  isPaused = false;
 		internal int index = 0;
 
-		/// <summary>
-		/// Start is only called once in the lifetime of the behaviour.
-		/// The difference between Awake and Start is that Start is only called if the script instance is enabled.
-		/// This allows you to delay any initialization code, until it is really needed.
-		/// Awake is always called before any Start functions.
-		/// This allows you to order initialization of scripts
-		/// </summary>
 		void Start()
 		{
 			//Update the score and lives without changing them
 			ChangeScore(0);
 			StartCoroutine(ChangeLives(0));
 		
-			// Hide the game over and victory canvas
+			// Hide unnecessary canvases
 			if( gameOverCanvas )    gameOverCanvas.gameObject.SetActive(false);
 			if( victoryCanvas )    gameOverCanvas.gameObject.SetActive(false);
 		
@@ -374,10 +362,8 @@ namespace RoadCrossing
 			}
 		}
 	
-		/// <summary>
-		/// Creates a lane, sometimes reversing the paths of the moving objects in it
-		/// </summary>
-		/// <param name="laneCount">Lane count.</param>
+		
+		// Create game lane
 		void CreateLane()
 		{
 			// If we have a victory lane and we passed the needed number of lanes, create the victory lane.
