@@ -10,7 +10,7 @@ namespace RoadCrossing
 	/// </summary>
 	public class RCGSelectButton:MonoBehaviour 
 	{
-		//The button that will be selected when this object is activated
+		// The button that will be selected when this object is activated
 		public GameObject selectedButton;
 
 		/// <summary>

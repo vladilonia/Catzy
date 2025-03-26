@@ -32,7 +32,7 @@ namespace RoadCrossing
 		// The movement direction of the objects in the lanes
 		internal int moveDirection = 1;
 
-		//Should the starting position of the objects be random? If true, the object has a 50% of starting from the laneEnd and going to the laneStart
+		// Should the starting position of the objects be random? If true, the object has a 50% of starting from the laneEnd and going to the laneStart
 		public bool randomDirection = true;
 
 		// Force the starting position of the objects to be in reverse, from laneEnd going to laneStart

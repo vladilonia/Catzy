@@ -154,7 +154,7 @@ namespace RoadCrossing
 						}
 						else
 						{
-							//thisTransform.position = targetPosition;
+							// thisTransform.position = targetPosition;
 							
 							if ( thisTransform.position.x > moveProgress )    
 							{
@@ -293,13 +293,13 @@ namespace RoadCrossing
 					// If we are using an Animator Object, use it for animation
 					if ( animatorObject )
 					{
-						//print(animatorObject.GetCurrentAnimatorStateInfo(0).IsName("Idle"));
-						//animatorObject["Jump"].time = 0f;
+						// print(animatorObject.GetCurrentAnimatorStateInfo(0).IsName("Idle"));
+						// animatorObject["Jump"].time = 0f;
 
 						animatorObject.Play("Jump", -1, 0);			
-						//print("F");
+						// print("F");
 
-						//if ( animator && !animator.GetCurrentAnimatorStateInfo(0).IsName("walk") )    animator.Play("walk", -1, 0f);
+						// if ( animator && !animator.GetCurrentAnimatorStateInfo(0).IsName("walk") )    animator.Play("walk", -1, 0f);
 
 					}
 					else if ( GetComponent<Animation>() && animationMove )    // Otherwise, if there is an animation component, play it
@@ -357,7 +357,7 @@ namespace RoadCrossing
 			targetPosition.y = moveHeight = targetHeight.position.y;
 		}
 	
-		//This function animates a coin added to the player
+		// This function animates a coin added to the player
 		/// <summary>
 		/// Adds the coin/changes score.
 		/// </summary>
@@ -380,14 +380,14 @@ namespace RoadCrossing
 				GameObject.FindGameObjectWithTag(soundSourceTag).GetComponent<AudioSource>().PlayOneShot(soundCoin[Mathf.FloorToInt(Random.value * soundCoin.Length)]);
 		}
 	
-		//This function destroys the player, and triggers the game over event
+		// This function destroys the player, and triggers the game over event
 		/// <summary>
 		/// Destroys the player, and triggers the game over event
 		/// </summary>
 		/// <param name="deathType">Death effect type.</param>
 		void Die(int deathType)
 		{
-			//If you are invulnerable, don't die
+			// If you are invulnerable, don't die
 			if ( isInvulnerable == false )
 			{
 				// If the player is attached to an object, detach from it
@@ -448,7 +448,7 @@ namespace RoadCrossing
 
 			// Set the position to 0 locally
 			thisTransform.localPosition = Vector3.zero;
-			//StartCoroutine(AttachAnimation(attachedToObject));
+			// StartCoroutine(AttachAnimation(attachedToObject));
 
 			// The player is not moving
 			isMoving = false;

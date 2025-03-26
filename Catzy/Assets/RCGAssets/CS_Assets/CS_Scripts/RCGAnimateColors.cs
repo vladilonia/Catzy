@@ -8,23 +8,23 @@ namespace RoadCrossing
 	/// </summary>
 	public class RCGAnimateColors : MonoBehaviour
 	{
-		//An array of the colors that will be animated
+		// An array of the colors that will be animated
 		public Color[] colorList;
 	
-		//The index number of the current color in the list
+		// The index number of the current color in the list
 		public int colorIndex = 0;
 	
-		//How long the animation of the color change lasts, and a counter to track it
+		// How long the animation of the color change lasts, and a counter to track it
 		public float changeTime = 1;
 		public float changeTimeCount = 0;
 	
-		//How quickly the sprite animates from one color to another
+		// How quickly the sprite animates from one color to another
 		public float changeSpeed = 1;
 	
-		//Is the animation paused?
+		// Is the animation paused?
 		public bool isPaused = false;
 	
-		//Is the animation looping?
+		// Is the animation looping?
 		public bool isLooping = true;
 	
 		/// <summary>

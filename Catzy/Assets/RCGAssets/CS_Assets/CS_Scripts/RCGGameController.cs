@@ -19,11 +19,11 @@ namespace RoadCrossing
 		public Transform[] playerObjects;
 		public int currentPlayer;
 
-		//Player lives. Death –> -1 life. 0 lifes = game over.
+		// Player lives. Death –> -1 life. 0 lifes = game over.
 		public int lives = 1;
 		public Transform livesText;
 
-		//Respawn things: respawn time, respawn skin
+		// Respawn things: respawn time, respawn skin
 		public float respawnTime = 1.2f;
 		public Transform respawnObject;
 		static Vector3 targetPosition;
@@ -31,20 +31,20 @@ namespace RoadCrossing
 		// The camera that follows the player
 		public Transform cameraObject;
 
-		//Is active only if swipes aren't used
+		// Is active only if swipes aren't used
 		public Transform moveButtonsObject;
 		
-		//Swipe or click/tap?
+		// Swipe or click/tap?
 		public bool swipeControls = false;
 		
-		//The start and end positions of the touches for swipe control
+		// The start and end positions of the touches for swipe control
 		internal Vector3 swipeStart;
 		internal Vector3 swipeEnd;
 		
-		//How far we need to swipe before detecting movement
+		// How far we need to swipe before detecting movement
 		public float swipeDistance = 10;
 
-		//How long to wait before the swipe command is cancelled
+		// How long to wait before the swipe command is cancelled
 		public float swipeTimeout = 1;
 		internal float swipeTimeoutCount;
 
@@ -67,10 +67,10 @@ namespace RoadCrossing
 		public ObjectDrop[] objectDrops;
 		internal Transform[] objectDropList;
 
-		//Should objects be dropped in sequence ( one after the other ) rather than randomly?
+		// Should objects be dropped in sequence ( one after the other ) rather than randomly?
 		public bool dropInSequence = true;
 
-		//The index of the current drop, if we are using dropInSequence
+		// The index of the current drop, if we are using dropInSequence
 		internal int currentDrop = -1;
 
 		// The offset left and right on the lane
@@ -86,10 +86,10 @@ namespace RoadCrossing
 		internal int highScore = 0;
 		internal int scoreMultiplier = 1;
 
-		//The player prefs record of the total coins we have ( not high score, but total coins we collected in all games )
+		// The player prefs record of the total coins we have ( not high score, but total coins we collected in all games )
 		public string coinsPlayerPrefs = "Coins";
 	
-		//The overall game speed
+		// The overall game speed
 		public float gameSpeed = 1;
 	
 		// How many points the player needs to collect before leveling up
@@ -131,7 +131,7 @@ namespace RoadCrossing
 
 		void Start()
 		{
-			//Update the score and lives without changing them
+			// Update the score and lives without changing them
 			ChangeScore(0);
 			StartCoroutine(ChangeLives(0));
 		
@@ -202,10 +202,10 @@ namespace RoadCrossing
 				}
 			}
 
-			//Get the currently selected player from PlayerPrefs
+			// Get the currently selected player from PlayerPrefs
 			currentPlayer = PlayerPrefs.GetInt("CurrentPlayer", currentPlayer);
 
-			//Set the current player object
+			// Set the current player object
 			SetPlayer(currentPlayer);
 
 			// If the player object is not already assigned, Assign it from the "Player" tag
@@ -222,23 +222,23 @@ namespace RoadCrossing
 				}
 			}
 		
-			//Go through all the powerups and reset their timers
+			// Go through all the powerups and reset their timers
 			for ( index = 0 ; index < powerups.Length ; index++ )
 			{
-				//Set the maximum duration of the powerup
+				// Set the maximum duration of the powerup
 				powerups[index].durationMax = powerups[index].duration;
 				
-				//Reset the duration counter
+				// Reset the duration counter
 				powerups[index].duration = 0;
 				
-				//Deactivate the icon of the powerup
+				// Deactivate the icon of the powerup
 				powerups[index].icon.gameObject.SetActive(false);
 			}
 
-			//If swipe controls are on, deactivate button controls
+			// If swipe controls are on, deactivate button controls
 			if ( swipeControls == true && moveButtonsObject )    moveButtonsObject.gameObject.SetActive(false);
 
-			//Register the current death line position
+			// Register the current death line position
 			if ( deathLineObject )    deathLineTargetPosX = deathLineObject.position.x;
 
 			// Pause the game at the start
@@ -276,15 +276,15 @@ namespace RoadCrossing
 						Pause();
 				}
 
-				//Using swipe controls to move the player
+				// Using swipe controls to move the player
 				if ( swipeControls == true )
 				{
 					if ( swipeTimeoutCount > 0 )    swipeTimeoutCount -= Time.deltaTime;
 					
-					//Check touches on the screen
+					// Check touches on the screen
 					foreach ( Touch touch in Input.touches )
 					{
-						//Check the touch position at the beginning
+						// Check the touch position at the beginning
 						if ( touch.phase == TouchPhase.Began )
 						{
 							swipeStart = touch.position;
@@ -293,28 +293,28 @@ namespace RoadCrossing
 							swipeTimeoutCount = swipeTimeout;
 						}
 						
-						//Check swiping motion
+						// Check swiping motion
 						if ( touch.phase == TouchPhase.Moved )
 						{
 							swipeEnd = touch.position;
 						}
 						
-						//Check the touch position at the end, and move the player accordingly
+						// Check the touch position at the end, and move the player accordingly
 						if( touch.phase == TouchPhase.Ended && swipeTimeoutCount > 0 )
 						{
-							if( (swipeStart.x - swipeEnd.x) > swipeDistance && (swipeStart.y - swipeEnd.y) < -swipeDistance ) //Swipe left
+							if( (swipeStart.x - swipeEnd.x) > swipeDistance && (swipeStart.y - swipeEnd.y) < -swipeDistance ) // Swipe left
 							{
 								MovePlayer("left");
 							}
-							else if((swipeStart.x - swipeEnd.x) < -swipeDistance && (swipeStart.y - swipeEnd.y) > swipeDistance ) //Swipe right
+							else if((swipeStart.x - swipeEnd.x) < -swipeDistance && (swipeStart.y - swipeEnd.y) > swipeDistance ) // Swipe right
 							{
 								MovePlayer("right");
 							}
-							else if((swipeStart.y - swipeEnd.y) < -swipeDistance && (swipeStart.x - swipeEnd.x) < -swipeDistance ) //Swipe up
+							else if((swipeStart.y - swipeEnd.y) < -swipeDistance && (swipeStart.x - swipeEnd.x) < -swipeDistance ) // Swipe up
 							{
 								MovePlayer("forward");
 							}
-							else if((swipeStart.y - swipeEnd.y) > swipeDistance && (swipeStart.x - swipeEnd.x) > swipeDistance ) //Swipe down
+							else if((swipeStart.y - swipeEnd.y) > swipeDistance && (swipeStart.x - swipeEnd.x) > swipeDistance ) // Swipe down
 							{
 								MovePlayer("backward");
 							}
@@ -323,7 +323,7 @@ namespace RoadCrossing
 				}
 			}
 			
-			//If the camera moved forward enough, create another lane
+			// If the camera moved forward enough, create another lane
 			if ( lanesList.Length > 0 && nextLanePosition - cameraObject.position.x < precreateLanes )
 			{
 				CreateLane();
@@ -482,28 +482,28 @@ namespace RoadCrossing
 		/// <param name="changeValue">Value to change in lives number.</param>
 		IEnumerator ChangeLives( int changeValue )
 		{
-			//Change the number of lives the player has
+			// Change the number of lives the player has
 			lives += changeValue;
 			
-			//Update the lives text
+			// Update the lives text
 			if ( livesText )    livesText.GetComponent<Text>().text = lives.ToString();
 
-			//If we ran out of lives, run the game over function
+			// If we ran out of lives, run the game over function
 			if ( lives <= 0 )    StartCoroutine(GameOver(0.5f));
 			else if ( playerObjects[currentPlayer] && changeValue < 0 )    
 			{
 				// Stop all powerups
 				if ( stopPowerupsOnDeath == true )
 				{
-					//Go through all the powerups and nullify their timers, making them end
+					// Go through all the powerups and nullify their timers, making them end
 					for ( index = 0 ; index < powerups.Length ; index++ )
 					{
-						//Set the duration of the powerup to 0
+						// Set the duration of the powerup to 0
 						powerups[index].duration = 0;
 					}
 				}
 
-				//Show the respawn object, allowing it to move
+				// Show the respawn object, allowing it to move
 				if ( respawnObject )    
 				{
 					respawnObject.gameObject.SetActive(true);
@@ -517,15 +517,15 @@ namespace RoadCrossing
 
 				yield return new WaitForSeconds(respawnTime);
 				
-				//Activate the player object
+				// Activate the player object
 				if ( playerObjects[currentPlayer].gameObject.activeSelf == false )
 				{
 					playerObjects[currentPlayer].gameObject.SetActive(true);
 					
-					//Respawn the player object
+					// Respawn the player object
 					playerObjects[currentPlayer].SendMessage("Spawn");
 
-					//If there is a respawn object, place the player at its position, and hide the respawn object
+					// If there is a respawn object, place the player at its position, and hide the respawn object
 					if ( respawnObject )
 					{
 						targetPosition = respawnObject.position;
@@ -547,10 +547,10 @@ namespace RoadCrossing
 		/// <param name="delay">The delay of the yield in seconds</param>
 		IEnumerator GameOver(float delay)
 		{
-			//Go through all the powerups and nullify their timers, making them end
+			// Go through all the powerups and nullify their timers, making them end
 			for ( index = 0 ; index < powerups.Length ; index++ )
 			{
-				//Set the duration of the powerup to 0
+				// Set the duration of the powerup to 0
 				powerups[index].duration = 0;
 			}
 
@@ -565,13 +565,13 @@ namespace RoadCrossing
 			if( gameCanvas )
 				Destroy(gameCanvas.gameObject);
 
-			//Get the number of coins we have
+			// Get the number of coins we have
 			int totalCoins = PlayerPrefs.GetInt( coinsPlayerPrefs, 0);
 			
-			//Add to the number of coins we collected in this game
+			// Add to the number of coins we collected in this game
 			totalCoins += score;
 			
-			//Record the number of coins we have
+			// Record the number of coins we have
 			PlayerPrefs.SetInt( coinsPlayerPrefs, totalCoins);
 		
 			// Show the game over screen
@@ -635,10 +635,10 @@ namespace RoadCrossing
 		/// <param name="playerNumber">The number of the player to be activated</param>
 		void SetPlayer( int playerNumber )
 		{
-			//Hide the respawn object
+			// Hide the respawn object
 			if ( respawnObject )    respawnObject.gameObject.SetActive(false);
 
-			//Go through all the players, and hide each one except the current player
+			// Go through all the players, and hide each one except the current player
 			for(index = 0; index < playerObjects.Length; index++)
 			{
 				if ( index != playerNumber )    
@@ -654,7 +654,7 @@ namespace RoadCrossing
 		/// <param name="moveDirection">The direction the player should move in</param>
 		void MovePlayer( string moveDirection )
 		{
-			//If there is a current player, send a move message with a direction
+			// If there is a current player, send a move message with a direction
 			if ( playerObjects[currentPlayer] && playerObjects[currentPlayer].gameObject.activeSelf == true )    playerObjects[currentPlayer].SendMessage("Move", moveDirection);
 			else if ( respawnObject && respawnObject.gameObject.activeSelf == true )    respawnObject.SendMessage("Move", moveDirection);
 		}
@@ -667,10 +667,10 @@ namespace RoadCrossing
 		{
 			gameSpeed = setValue;
 
-			//Set the overall speed of the scene
+			// Set the overall speed of the scene
 			Time.timeScale = gameSpeed;
 
-			//Toggle between a low pitch for the slowmotion time, and normal pitch when the slowmotion ends
+			// Toggle between a low pitch for the slowmotion time, and normal pitch when the slowmotion ends
 			if ( GetComponent<AudioSource>().pitch == 1 )    GetComponent<AudioSource>().pitch = 0.5f;
 			else    GetComponent<AudioSource>().pitch = 1;
 		}
@@ -699,40 +699,40 @@ namespace RoadCrossing
 		/// <param name="setValue">The index numebr of the powerup to activate</param>
 		IEnumerator ActivatePowerup( int powerupIndex )
 		{
-			//If there is already a similar powerup running, refill its duration timer
+			// If there is already a similar powerup running, refill its duration timer
 			if ( powerups[powerupIndex].duration > 0 )
 			{
-				//Refil the duration of the powerup to maximum
+				// Refil the duration of the powerup to maximum
 				powerups[powerupIndex].duration = powerups[powerupIndex].durationMax;
 			}
-			else //Otherwise, activate the power up functions
+			else // Otherwise, activate the power up functions
 			{
-				//Activate the powerup icon
+				// Activate the powerup icon
 				if ( powerups[powerupIndex].icon )    powerups[powerupIndex].icon.gameObject.SetActive(true);
 
-				//Run up to two start functions from the gamecontroller
+				// Run up to two start functions from the gamecontroller
 				if ( powerups[powerupIndex].startFunctionA != string.Empty )    SendMessage(powerups[powerupIndex].startFunctionA, powerups[powerupIndex].startParamaterA);
 				if ( powerups[powerupIndex].startFunctionB != string.Empty )    SendMessage(powerups[powerupIndex].startFunctionB, powerups[powerupIndex].startParamaterB);
 
-				//Fill the duration timer to maximum
+				// Fill the duration timer to maximum
 				powerups[powerupIndex].duration = powerups[powerupIndex].durationMax;
 				
-				//Count down the duration of the powerup
+				// Count down the duration of the powerup
 				while ( powerups[powerupIndex].duration > 0 )
 				{
 					yield return new WaitForSeconds(Time.deltaTime);
 
 					powerups[powerupIndex].duration -= Time.deltaTime;
 
-					//Animate the powerup timer graphic using fill amount
+					// Animate the powerup timer graphic using fill amount
 					if ( powerups[powerupIndex].icon )    powerups[powerupIndex].icon.Find("FillAmount").GetComponent<Image>().fillAmount = powerups[powerupIndex].duration/powerups[powerupIndex].durationMax;
 				}
 
-				//Run up to two end functions from the gamecontroller
+				// Run up to two end functions from the gamecontroller
 				if ( powerups[powerupIndex].endFunctionA != string.Empty )    SendMessage(powerups[powerupIndex].endFunctionA, powerups[powerupIndex].endParamaterA);
 				if ( powerups[powerupIndex].endFunctionB != string.Empty )    SendMessage(powerups[powerupIndex].endFunctionB, powerups[powerupIndex].endParamaterB);
 
-				//Deactivate the powerup icon
+				// Deactivate the powerup icon
 				if ( powerups[powerupIndex].icon )    powerups[powerupIndex].icon.gameObject.SetActive(false);
 			}
 		}
@@ -742,7 +742,7 @@ namespace RoadCrossing
 		/// </summary>
 		public void OnDrawGizmos()
 		{
-			//Draw the position of the next lane in red
+			// Draw the position of the next lane in red
 			Gizmos.color = Color.red;
 			Gizmos.DrawLine( new Vector3(nextLanePosition,0,-10), new Vector3(nextLanePosition,0,10) );
 		}

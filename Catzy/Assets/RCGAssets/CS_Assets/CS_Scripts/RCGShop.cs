@@ -10,31 +10,31 @@ namespace RoadCrossing
 	/// </summary>
 	public class RCGShop : MonoBehaviour
 	{
-		//How many coins we have left in the shop
+		// How many coins we have left in the shop
 		public int coinsLeft = 0;
 		
-		//The text that displays the coins we have
+		// The text that displays the coins we have
 		public Transform coinsText;
 		
-		//The player prefs record of the coins we have
+		// The player prefs record of the coins we have
 		public string coinsPlayerPrefs = "Coins";
 
 		// An array of shop items that can be bought and unlocked
 		public ShopItem[] shopItems;
 
-		//The number of the currently selected item
+		// The number of the currently selected item
 		public int currentItem = 0;
 		
-		//This is the player prefs name that will be updated with the number of the currently selected item
+		// This is the player prefs name that will be updated with the number of the currently selected item
 		public string playerPrefsName = "CurrentPlayer";
 		
-		//The color of the item when we have at least one of it
+		// The color of the item when we have at least one of it
 		public Color unselectedColor = new Color(0.6f,0.6f,0.6f,1);
 		
-		//The color of the item when it is selected
+		// The color of the item when it is selected
 		public Color selectedColor = new Color(1,1,1,1);
 		
-		//The color of the item when we can't afford it
+		// The color of the item when we can't afford it
 		public Color errorColor = new Color(1,0,0,1);
 
 		/// <summary>
@@ -46,16 +46,16 @@ namespace RoadCrossing
 		/// </summary>
 		void Start()
 		{
-			//Get the number of coins we have
+			// Get the number of coins we have
 			coinsLeft = PlayerPrefs.GetInt(coinsPlayerPrefs, coinsLeft);
 			
-			//Update the text of the coins we have
+			// Update the text of the coins we have
 			coinsText.GetComponent<Text>().text = coinsLeft.ToString();
 			
-			//Get the number of the current player
+			// Get the number of the current player
 			currentItem = PlayerPrefs.GetInt(playerPrefsName, currentItem);
 			
-			//Update all the items
+			// Update all the items
 			UpdateItems();
 		}
 
@@ -67,24 +67,24 @@ namespace RoadCrossing
 		{
 			for ( int index = 0 ; index < shopItems.Length ; index++ )
 			{
-				//Get the lock state of this item from player prefs
+				// Get the lock state of this item from player prefs
 				shopItems[index].lockState = PlayerPrefs.GetInt(shopItems[index].playerPrefsName, shopItems[index].lockState);
 				
-				//Deselect the item
+				// Deselect the item
 				shopItems[index].itemButton.GetComponent<Image>().color = unselectedColor;
 				
-				//If we already unlocked this item, don't display its price
+				// If we already unlocked this item, don't display its price
 				if ( shopItems[index].lockState > 0 )
 				{
-					//Deactivate the price and coin icon
+					// Deactivate the price and coin icon
 					shopItems[index].itemButton.Find("TextPrice").gameObject.SetActive(false);
 					
-					//Highlight the currently selected item
+					// Highlight the currently selected item
 					if ( index == currentItem )    shopItems[index].itemButton.GetComponent<Image>().color = selectedColor;
 				}
 				else
 				{
-					//Update the text of the cost
+					// Update the text of the cost
 					shopItems[index].itemButton.Find("TextPrice").GetComponent<Text>().text = shopItems[index].costToUnlock.ToString();
 				}
 			}
@@ -96,38 +96,38 @@ namespace RoadCrossing
 		/// <param name="laneCount">Lane count.</param>
 		void BuyItem( int itemNumber )
 		{
-			//If we already unlocked this item, just select it
+			// If we already unlocked this item, just select it
 			if ( shopItems[itemNumber].lockState > 0 )
 			{
-				//Select the item
+				// Select the item
 				SelectItem(itemNumber);
 			}
-			else if ( shopItems[itemNumber].costToUnlock <= coinsLeft ) //If we have enough coins, buy this item
+			else if ( shopItems[itemNumber].costToUnlock <= coinsLeft ) // If we have enough coins, buy this item
 			{
-				//Increase the item count
+				// Increase the item count
 				shopItems[itemNumber].lockState = 1;
 				
-				//Register the item count in the player prefs
+				// Register the item count in the player prefs
 				PlayerPrefs.SetInt(shopItems[itemNumber].playerPrefsName, shopItems[itemNumber].lockState);
 				
-				//Deduct the price from the coins we have
+				// Deduct the price from the coins we have
 				coinsLeft -= shopItems[itemNumber].costToUnlock;
 				
-				//Update the text of the coins we have
+				// Update the text of the coins we have
 				coinsText.GetComponent<Text>().text = coinsLeft.ToString();
 				
-				//Register the item lock state in the player prefs
+				// Register the item lock state in the player prefs
 				PlayerPrefs.SetInt(coinsPlayerPrefs, coinsLeft);
 				
-				//Select the item
+				// Select the item
 				SelectItem(itemNumber);
 			}
 			
-			//Update all the items
+			// Update all the items
 			UpdateItems();
 		}
 		
-		//This function selects an item
+		// This function selects an item
 		/// <summary>
 		/// Creates a lane, sometimes reversing the paths of the moving objects in it
 		/// </summary>
