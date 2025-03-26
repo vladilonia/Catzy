@@ -56,9 +56,6 @@ namespace RoadCrossing
 		// An array of lanes that randomly appear as the player moves forward
 		public Lane[] lanes;
 		internal Lane[] lanesList;	
-
-		// A lane that appears after the player passes the set number of lanes for victory. This is used in randomly-generated levels only.
-		public Transform victoryLane;
 		
 		// When the player passes this number of lanes in a level, we win. This is used in randomly-generated levels only.
 		public int lanesToVictory = 0;
@@ -215,14 +212,13 @@ namespace RoadCrossing
 			if( cameraObject == null )
 				cameraObject = GameObject.FindGameObjectWithTag("MainCamera").transform;
 		
-			//Create a few lanes at the start of the game
+			// Create a few lanes at the start of the game
 			if ( lanesList.Length > 0 )    
 			{
 				// Count the number of lanes to create at the start of the game
 				for ( index = 0 ; index < precreateLanes ; index++ )
 				{
-					// Create a lane only if we have an endless game, or (in case we have a victory condition) as long as we didn't reach the number of lanes to victory
-					if ( victoryLane == null || (victoryLane && lanesToVictory > 0 && lanesCreated <= lanesToVictory) )    CreateLane();
+					CreateLane();
 				}
 			}
 		
@@ -247,11 +243,6 @@ namespace RoadCrossing
 
 			// Pause the game at the start
 			Pause();
-
-			// These warnings appear if you set one of the attributes needed for a win condition in a randomly generated level, but don't set the rest
-			if ( victoryLane && lanesToVictory <= 0 )    Debug.LogWarning("If you want the victory lane to appear you must set the number of lanes to victory higher than 0");
-			if ( victoryLane == null && lanesToVictory > 0 )    Debug.LogWarning("You must assign a victory lane which will appear after you passed the number of lanes to victory", victoryLane);
-			if ( victoryLane && lanesToVictory > 0 && victoryCanvas == null )    Debug.LogWarning("You must set a victory canvas from the scene that will appear when you win the game ( similar to how the game over canvas is set )");
 		}
 	
 		/// <summary>
@@ -334,9 +325,8 @@ namespace RoadCrossing
 			
 			//If the camera moved forward enough, create another lane
 			if ( lanesList.Length > 0 && nextLanePosition - cameraObject.position.x < precreateLanes )
-			{ 
-				// Create a lane only if we have an endless game, or (in case we have a victory condition) as long as we didn't reach the number of lanes to victory
-				if ( victoryLane == null || (victoryLane && lanesToVictory > 0 && lanesCreated <= lanesToVictory) )    CreateLane();
+			{
+				CreateLane();
 			}
 
 			if( cameraObject )
@@ -366,45 +356,37 @@ namespace RoadCrossing
 		// Create game lane
 		void CreateLane()
 		{
-			// If we have a victory lane and we passed the needed number of lanes, create the victory lane.
-			if ( victoryLane && lanesToVictory > 0 && lanesCreated >= lanesToVictory )
-			{
-				Instantiate( victoryLane, new Vector3(nextLanePosition,0,0), Quaternion.identity);
-			}
-			else //Othewise, create a random lane from the list of available lanes
-			{
-				// Choose a random lane from the list
-				int randomLane = Mathf.FloorToInt(Random.Range(0, lanesList.Length));
+			// Choose a random lane from the list
+			int randomLane = Mathf.FloorToInt(Random.Range(0, lanesList.Length));
 			
-				// Create a random lane from the list of available lanes
-				Transform newLane = Instantiate(lanesList[randomLane].laneObject, new Vector3(nextLanePosition, 0, 0), Quaternion.identity) as Transform;
+			// Create a random lane from the list of available lanes
+			Transform newLane = Instantiate(lanesList[randomLane].laneObject, new Vector3(nextLanePosition, 0, 0), Quaternion.identity) as Transform;
 
-				if ( Random.value < lanesList[randomLane].itemChance )
-				{ 
-					if ( dropInSequence == true )    
-					{
-						if ( currentDrop < objectDropList.Length - 1 )    currentDrop++;
-						else    currentDrop = 0;
-					}
-					else
-					{
-						currentDrop = Mathf.FloorToInt(Random.Range(0, objectDropList.Length));
-					}
-
-					Transform newObject = Instantiate(objectDropList[currentDrop]) as Transform;
-
-					Vector3 newVector = new Vector3();
-
-					newVector = newLane.position;
-
-					newVector.z += Mathf.Round(Random.Range(-objectDropOffset, objectDropOffset));
-
-					newObject.position = newVector;
+			if ( Random.value < lanesList[randomLane].itemChance )
+			{ 
+				if ( dropInSequence == true )    
+				{
+					if ( currentDrop < objectDropList.Length - 1 )    currentDrop++;
+					else    currentDrop = 0;
 				}
-			
-				// Go to the next lane position
-				nextLanePosition += lanesList[randomLane].laneWidth;
+				else
+				{
+					currentDrop = Mathf.FloorToInt(Random.Range(0, objectDropList.Length));
+				}
+
+				Transform newObject = Instantiate(objectDropList[currentDrop]) as Transform;
+
+				Vector3 newVector = new Vector3();
+
+				newVector = newLane.position;
+
+				newVector.z += Mathf.Round(Random.Range(-objectDropOffset, objectDropOffset));
+
+				newObject.position = newVector;
 			}
+			
+			// Go to the next lane position
+			nextLanePosition += lanesList[randomLane].laneWidth;
 
 			lanesCreated++;
 		}
@@ -621,89 +603,6 @@ namespace RoadCrossing
 			// If there is a source and a sound, play it from the source
 			if( soundSourceTag != string.Empty && soundGameOver )
 				GameObject.FindGameObjectWithTag(soundSourceTag).GetComponent<AudioSource>().PlayOneShot(soundGameOver);
-		}
-
-		/// <summary>
-		/// Handles when the game is won.
-		/// </summary>
-		/// <returns>Yields for a period of time to allow execution to continue then continues through the victory text/gui display</returns>
-		/// <param name="delay">The delay of the yield in seconds</param>
-		IEnumerator Victory(float delay)
-		{
-			//Go through all the powerups and nullify their timers, making them end
-			for ( index = 0 ; index < powerups.Length ; index++ )
-			{
-				//Set the duration of the powerup to 0
-				powerups[index].duration = 0;
-			}
-
-			//Activate the player object
-			playerObjects[currentPlayer].gameObject.SetActive(true);
-
-			//If there is a respawn object, place the player at its position, and hide the respawn object
-			if ( respawnObject && respawnObject.gameObject.activeSelf == true )
-			{
-				targetPosition = respawnObject.position;
-				
-				playerObjects[currentPlayer].position = targetPosition;
-				
-				playerObjects[currentPlayer].rotation = respawnObject.rotation;
-				
-				respawnObject.gameObject.SetActive(false);
-			}
-
-			// Call the victory function on the player
-			if ( playerObjects[currentPlayer] )    playerObjects[currentPlayer].SendMessage("Victory");
-
-			yield return new WaitForSeconds(delay);
-			
-			isGameOver = true;
-			
-			// Remove the pause and game screens
-			if( pauseCanvas )
-				Destroy(pauseCanvas.gameObject);
-			
-			if( gameCanvas )
-				Destroy(gameCanvas.gameObject);
-			
-			//Get the number of coins we have
-			int totalCoins = PlayerPrefs.GetInt( coinsPlayerPrefs, 0);
-			
-			//Add to the number of coins we collected in this game
-			totalCoins += score;
-			
-			//Record the number of coins we have
-			PlayerPrefs.SetInt( coinsPlayerPrefs, totalCoins);
-			
-			// Show the game over screen
-			if( victoryCanvas )
-			{
-				// Show the game over screen
-				victoryCanvas.gameObject.SetActive(true);
-				
-				// Write the score text
-				victoryCanvas.Find("TextScore").GetComponent<Text>().text = "SCORE " + score.ToString();
-				
-				// Check if we got a high score
-				if( score > highScore )
-				{
-					highScore = score;
-					
-					// Register the new high score
-					#if UNITY_5_3 || UNITY_5_3_OR_NEWER
-					PlayerPrefs.SetInt(SceneManager.GetActiveScene().name + "_HighScore", score);
-					#else
-					PlayerPrefs.SetInt(Application.loadedLevelName + "_HighScore", score);
-					#endif
-				}
-				
-				// Write the high sscore text
-				victoryCanvas.Find("TextHighScore").GetComponent<Text>().text = "HIGH SCORE " + highScore.ToString();
-			}
-
-			// If there is a source and a sound, play it from the source
-			if( soundSourceTag != string.Empty && soundVictory )
-				GameObject.FindGameObjectWithTag(soundSourceTag).GetComponent<AudioSource>().PlayOneShot(soundVictory);
 		}
 	
 		/// <summary>
