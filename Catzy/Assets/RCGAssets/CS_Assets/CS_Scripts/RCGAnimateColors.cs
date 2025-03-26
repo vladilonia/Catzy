@@ -21,10 +21,10 @@ namespace RoadCrossing
 		// How quickly the sprite animates from one color to another
 		public float changeSpeed = 1;
 	
-		// Is the animation paused?
+		// Is the animation paused? No
 		public bool isPaused = false;
 	
-		// Is the animation looping?
+		// Is the animation looping? Yes
 		public bool isLooping = true;
 	
 		/// <summary>
