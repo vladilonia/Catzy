@@ -3,11 +3,11 @@ using RoadCrossing.Types;
 
 namespace RoadCrossing
 {
-	/// <summary>
-	/// This script defines a block which can interact with the player in various ways. A block may be a rock or a wall that
-	/// bounces the player back, or it can be an enemy that kills the player, or it can be a coin that can be collected.
-	/// </summary>
-	public class RCGBlock : MonoBehaviour
+    /// <summary>
+    /// A code for a block that can be touched by the player (can be a rock, a wall, an enemy, a coin, etc.
+    /// Defines characteristics of a block (what it is, what player can do to it) and its interaction with the player (nothing, kill him, etc)
+    /// </summary>
+    public class RCGBlock : MonoBehaviour
 	{
 		// The tag of the object that can touch this block
 		public string touchTargetTag = "Player";
@@ -17,7 +17,7 @@ namespace RoadCrossing
 	
 		// Remove this object after a ceratin amount of touches
 		public int removeAfterTouches = 0;
-		internal bool  isRemovable = false;
+		internal bool isRemovable = false;
 	
 		// The animation that plays when this object is touched
 		public AnimationClip hitAnimation;
@@ -28,15 +28,11 @@ namespace RoadCrossing
 	
 		// The effect that is created at the location of this object when it is destroyed
 		public Transform deathEffect;
-	
-		/// <summary>
-		/// Start is only called once in the lifetime of the behaviour.
-		/// The difference between Awake and Start is that Start is only called if the script instance is enabled.
-		/// This allows you to delay any initialization code, until it is really needed.
-		/// Awake is always called before any Start functions.
-		/// This allows you to order initialization of scripts
-		/// </summary>
-		void Start()
+
+        /// <summary>
+        /// define what kind of object it is (toucheble / untouchable)
+        /// </summary>
+        void Start()
 		{
 			// If removeAfterTouches is higher than 0, make this object removable after one or more touches
 			if( removeAfterTouches > 0 )
@@ -46,7 +42,6 @@ namespace RoadCrossing
 		/// <summary>
 		/// Is executed when this obstacle touches another object with a trigger collider
 		/// </summary>
-		/// <param name="other"><see cref="Collider"/></param>
 		void OnTriggerEnter(Collider other)
 		{	
 			// Check if the object that was touched has the correct tag
