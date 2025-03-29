@@ -7,17 +7,17 @@ namespace RoadCrossing
 	/// <summary>
 	/// Toggles a sound source when clicked on. It also records the sound state (on/off) in a PlayerPrefs. In order to detect clicks you need to attach a collider to this object.
 	/// </summary>
-	public class RCGToggleSound:MonoBehaviour
+	public class RCGToggleSound : MonoBehaviour
 	{
 		// The source of the sound
 		public Transform soundObject;
-	
+
 		// The PlayerPrefs name of the sound
 		public string playerPref = "SoundVolume";
-	
+
 		// The index of the current value of the sound
 		internal float currentState = 1;
-	
+
 		/// <summary>
 		/// Awake is called when the script instance is being loaded.
 		/// Awake is used to initialize any variables or game state before the game starts. Awake is called only once during the 
@@ -29,15 +29,15 @@ namespace RoadCrossing
 		void Awake()
 		{
 			// Get the current state of the sound from PlayerPrefs
-			if( soundObject )
+			if (soundObject)
 				currentState = PlayerPrefs.GetFloat(playerPref, soundObject.GetComponent<AudioSource>().volume);
-			else   
+			else
 				currentState = PlayerPrefs.GetFloat(playerPref, currentState);
-		
+
 			// Set the sound in the sound source
 			SetSound();
 		}
-	
+
 		/// <summary>
 		/// Sets the sound volume
 		/// </summary>
@@ -49,7 +49,7 @@ namespace RoadCrossing
 			Color newColor = GetComponent<Image>().material.color;
 
 			// Update the graphics of the button image to fit the sound state
-			if( currentState == 1 )
+			if (currentState == 1)
 				newColor.a = 1;
 			else
 				newColor.a = 0.5f;
@@ -57,26 +57,26 @@ namespace RoadCrossing
 			GetComponent<Image>().color = newColor;
 
 			// Set the value of the sound state to the source object
-			if( soundObject ) 
+			if (soundObject)
 				soundObject.GetComponent<AudioSource>().volume = currentState;
 		}
-	
+
 		/// <summary>
 		/// Toggle the sound. Cycle through all sound modes and set the volume and icon accordingly
 		/// </summary>
 		void ToggleSound()
 		{
 			currentState = 1 - currentState;
-		
+
 			SetSound();
 		}
-	
+
 		/// <summary>
 		/// Starts the sound source.
 		/// </summary>
 		void StartSound()
-		{	
-			if( soundObject )
+		{
+			if (soundObject)
 				soundObject.GetComponent<AudioSource>().Play();
 		}
 	}

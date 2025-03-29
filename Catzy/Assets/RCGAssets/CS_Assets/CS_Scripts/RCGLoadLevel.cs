@@ -19,18 +19,18 @@ namespace RoadCrossing
 		{
 			Application.OpenURL(urlName);
 		}
-	
+
 		/// <summary>
 		/// Loads the level.
 		/// </summary>
 		/// <param name="levelName">Level name.</param>
 		public void LoadLevel(string levelName)
 		{
-			#if UNITY_5_3 || UNITY_5_3_OR_NEWER
+#if UNITY_5_3 || UNITY_5_3_OR_NEWER
 			SceneManager.LoadScene(levelName);
-			#else
+#else
 			Application.LoadLevel(levelName);
-			#endif
+#endif
 		}
 
 		/// <summary>
@@ -38,11 +38,11 @@ namespace RoadCrossing
 		/// </summary>
 		public void RestartLevel()
 		{
-			#if UNITY_5_3 || UNITY_5_3_OR_NEWER
+#if UNITY_5_3 || UNITY_5_3_OR_NEWER
 			SceneManager.LoadScene(SceneManager.GetActiveScene().name);
-			#else
+#else
 			Application.LoadLevel(Application.loadedLevelName);
-			#endif
+#endif
 		}
 	}
 }

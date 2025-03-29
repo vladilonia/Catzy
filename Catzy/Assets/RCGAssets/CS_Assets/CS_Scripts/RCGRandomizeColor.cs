@@ -9,7 +9,7 @@ namespace RoadCrossing
 	{
 		// A list of possible colors for the object
 		public Color[] colorList;
-	
+
 		/// <summary>
 		/// Start is only called once in the lifetime of the behaviour.
 		/// The difference between Awake and Start is that Start is only called if the script instance is enabled.
@@ -24,7 +24,7 @@ namespace RoadCrossing
 			Component[] comps = GetComponentsInChildren<Renderer>();
 
 			// Set the color to all parts of the object
-			foreach( Renderer part in comps ) 
+			foreach (Renderer part in comps)
 				part.GetComponent<Renderer>().material.color = colorList[randomColor];
 		}
 	}
