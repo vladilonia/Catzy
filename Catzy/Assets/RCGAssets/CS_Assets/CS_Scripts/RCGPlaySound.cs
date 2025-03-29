@@ -9,11 +9,11 @@ namespace RoadCrossing
 	{
 		// An array of possible sounds
 		public AudioClip[] audioList;
-	
+
 		// The tag of the sound source
 		public string audioSourceTag = "GameController";
 		public bool playOnStart = true;
-	
+
 		/// <summary>
 		/// Start is only called once in the lifetime of the behaviour.
 		/// The difference between Awake and Start is that Start is only called if the script instance is enabled.
@@ -23,20 +23,20 @@ namespace RoadCrossing
 		/// </summary>
 		void Start()
 		{
-			if( playOnStart == true )
+			if (playOnStart == true)
 				PlaySound();
 		}
-	
+
 		/// <summary>
 		/// Plays a random sound from the audioList array based off upper and lower bounds.
 		/// </summary>
 		void PlaySound()
 		{
 			// If there is a sound source tag and audio to play, play the sound from the audio source based on its tag
-			if( audioSourceTag != string.Empty && audioList.Length > 0 )
+			if (audioSourceTag != string.Empty && audioList.Length > 0)
 				GameObject.FindGameObjectWithTag(audioSourceTag).GetComponent<AudioSource>().PlayOneShot(audioList[Mathf.FloorToInt(Random.value * audioList.Length)]);
 		}
-	
+
 		/// <summary>
 		/// Plays a song by index from the audio array
 		/// </summary>
@@ -44,7 +44,7 @@ namespace RoadCrossing
 		void PlaySound(int soundIndex)
 		{
 			// If there is a sound source tag and audio to play, play the sound from the audio source based on its tag
-			if( audioSourceTag != string.Empty && audioList.Length > 0 ) 
+			if (audioSourceTag != string.Empty && audioList.Length > 0)
 				GameObject.FindGameObjectWithTag(audioSourceTag).GetComponent<AudioSource>().PlayOneShot(audioList[soundIndex]);
 		}
 	}

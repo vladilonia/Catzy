@@ -8,7 +8,7 @@ namespace RoadCrossing
 	/// <summary>
 	/// Selects a certain button when this canvas/panel/object is enabled
 	/// </summary>
-	public class RCGSelectButton:MonoBehaviour 
+	public class RCGSelectButton : MonoBehaviour
 	{
 		// The button that will be selected when this object is activated
 		public GameObject selectedButton;
@@ -16,13 +16,13 @@ namespace RoadCrossing
 		/// <summary>
 		/// Runs when this object is enabled
 		/// </summary>
-		void OnEnable() 
+		void OnEnable()
 		{
-			if ( EventSystem.current && selectedButton )    
+			if (EventSystem.current && selectedButton)
 			{
 				// Select the button
 				EventSystem.current.SetSelectedGameObject(selectedButton);
-			}		
+			}
 		}
 	}
 }
