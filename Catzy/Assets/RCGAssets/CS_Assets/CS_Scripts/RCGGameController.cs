@@ -15,24 +15,30 @@ namespace RoadCrossing
 	/// </summary>
 	public class RCGGameController : MonoBehaviour
 	{
-		// The player
-		public Transform[] playerObjects;
-		public int currentPlayer;
+		public int numOfPlayers;
 
-		// Player lives. Death –> -1 life. 0 lifes = game over.
-		public int lives = 1;
+		// The player
+		public Transform[] playerObjects1;
+        public Transform[] playerObjects2;
+        public int currentPlayer1;
+        public int currentPlayer2;
+
+        // Player lives. Death –> -1 life. 0 lifes = game over.
+        public int lives = 1;
 		public Transform livesText;
 
 		// Respawn things: respawn time, respawn skin
 		public float respawnTime = 1.2f;
-		public Transform respawnObject;
-		static Vector3 targetPosition;
+		public Transform respawnObject1;
+        public Transform respawnObject2;
+        static Vector3 targetPosition;
 
 		// The camera that follows the player
-		public Transform cameraObject;
+		public Transform cameraObject1;
+        public Transform cameraObject2;
 
-		// Is active only if swipes aren't used
-		public Transform moveButtonsObject;
+        // Is active only if swipes aren't used
+        public Transform moveButtonsObject;
 
 		// Swipe or click/tap?
 		public bool swipeControls = false;
@@ -206,17 +212,25 @@ namespace RoadCrossing
 			}
 
 			// Get the currently selected player from PlayerPrefs
-			currentPlayer = PlayerPrefs.GetInt("CurrentPlayer", currentPlayer);
+			currentPlayer1 = PlayerPrefs.GetInt("currentPlayer1", currentPlayer1);
 
 			// Set the current player object
-			SetPlayer(currentPlayer);
+			SetPlayer1(currentPlayer1);
+			if(numOfPlayers > 1)
+			{
+				SetPlayer2(1);
+			}
 
 			// If the player object is not already assigned, Assign it from the "Player" tag
-			if (cameraObject == null)
-				cameraObject = GameObject.FindGameObjectWithTag("MainCamera").transform;
+			if (cameraObject1 == null)
+				cameraObject1 = GameObject.FindGameObjectWithTag("MainCamera").transform;
 
-			//Create a few lanes at the start of the game
-			if (lanesList.Length > 0)
+            if (cameraObject2 == null)
+                cameraObject2 = GameObject.FindGameObjectWithTag("SecondCamera").transform;
+
+
+            //Create a few lanes at the start of the game
+            if (lanesList.Length > 0)
 			{
 				// Count the number of lanes to create at the start of the game
 				for (index = 0; index < precreateLanes; index++)
@@ -313,19 +327,19 @@ namespace RoadCrossing
 						{
 							if ((swipeStart.x - swipeEnd.x) > swipeDistance && (swipeStart.y - swipeEnd.y) < -swipeDistance) // Swipe left
 							{
-								MovePlayer("left");
+								MovePlayer1("left");
 							}
 							else if ((swipeStart.x - swipeEnd.x) < -swipeDistance && (swipeStart.y - swipeEnd.y) > swipeDistance) // Swipe right
 							{
-								MovePlayer("right");
+								MovePlayer1("right");
 							}
 							else if ((swipeStart.y - swipeEnd.y) < -swipeDistance && (swipeStart.x - swipeEnd.x) < -swipeDistance) // Swipe up
 							{
-								MovePlayer("forward");
+								MovePlayer1("forward");
 							}
 							else if ((swipeStart.y - swipeEnd.y) > swipeDistance && (swipeStart.x - swipeEnd.x) > swipeDistance) // Swipe down
 							{
-								MovePlayer("backward");
+								MovePlayer1("backward");
 							}
 						}
 					}
@@ -333,34 +347,67 @@ namespace RoadCrossing
 			}
 
 			// If the camera moved forward enough, create another lane
-			if (lanesList.Length > 0 && nextLanePosition - cameraObject.position.x < precreateLanes)
+			if (lanesList.Length > 0 && ((nextLanePosition - cameraObject1.position.x < precreateLanes) || (nextLanePosition - cameraObject2.position.x < precreateLanes)))
 			{
 				// Create a lane only if we have an endless game, or (in case we have a victory condition) as long as we didn't reach the number of lanes to victory
 				if (victoryLane == null || (victoryLane && lanesToVictory > 0 && lanesCreated <= lanesToVictory)) CreateLane();
 			}
 
-			if (cameraObject)
+			if (cameraObject1)
 			{
 				// Make the camera chase the player in all directions
-				if (playerObjects[currentPlayer] && playerObjects[currentPlayer].gameObject.activeSelf == true)
-					cameraObject.position = new Vector3(Mathf.Lerp(cameraObject.position.x, playerObjects[currentPlayer].position.x, Time.deltaTime * 3), 0, Mathf.Lerp(cameraObject.position.z, playerObjects[currentPlayer].position.z, Time.deltaTime * 3));
-				else if (respawnObject && respawnObject.gameObject.activeSelf == true)
-					cameraObject.position = new Vector3(Mathf.Lerp(cameraObject.position.x, respawnObject.position.x, Time.deltaTime * 3), 0, Mathf.Lerp(cameraObject.position.z, respawnObject.position.z, Time.deltaTime * 3));
-
-				if (deathLineObject)
-				{
-					if (cameraObject.position.x > deathLineTargetPosX)
-						deathLineTargetPosX = cameraObject.position.x;
-
-					if (isGameOver == false)
-						deathLineTargetPosX += deathLineSpeed * Time.deltaTime;
-
-					Vector3 newVector3 = new Vector3(deathLineTargetPosX, deathLineObject.position.y, deathLineObject.position.z);
-
-					deathLineObject.position = Vector3.Lerp(deathLineObject.position, newVector3, Time.deltaTime * 0.5f);
-				}
+				if (playerObjects1[currentPlayer1] && playerObjects1[currentPlayer1].gameObject.activeSelf == true)
+					cameraObject1.position = new Vector3(Mathf.Lerp(cameraObject1.position.x, playerObjects1[currentPlayer1].position.x, Time.deltaTime * 3), 0, Mathf.Lerp(cameraObject1.position.z, playerObjects1[currentPlayer1].position.z, Time.deltaTime * 3));
+				else if (respawnObject1 && respawnObject1.gameObject.activeSelf == true)
+					cameraObject1.position = new Vector3(Mathf.Lerp(cameraObject1.position.x, respawnObject1.position.x, Time.deltaTime * 3), 0, Mathf.Lerp(cameraObject1.position.z, respawnObject1.position.z, Time.deltaTime * 3));	
 			}
-		}
+            if (cameraObject2)
+            {
+                // Make the camera chase the player in all directions
+                if (playerObjects2[currentPlayer2] && playerObjects2[currentPlayer2].gameObject.activeSelf == true)
+                    cameraObject2.position = new Vector3(Mathf.Lerp(cameraObject2.position.x, playerObjects2[currentPlayer2].position.x, Time.deltaTime * 3), 0, Mathf.Lerp(cameraObject2.position.z, playerObjects2[currentPlayer2].position.z, Time.deltaTime * 3));
+                else if (respawnObject2 && respawnObject2.gameObject.activeSelf == true)
+                    cameraObject2.position = new Vector3(Mathf.Lerp(cameraObject2.position.x, respawnObject2.position.x, Time.deltaTime * 3), 0, Mathf.Lerp(cameraObject2.position.z, respawnObject2.position.z, Time.deltaTime * 3));
+            }
+
+            if (deathLineObject)
+            {
+				if(numOfPlayers == 1)
+				{
+                    if (cameraObject1)
+					{
+                        if (cameraObject1.position.x > deathLineTargetPosX)
+                            deathLineTargetPosX = cameraObject1.position.x;
+                    }
+
+                }
+				else if (numOfPlayers > 1)
+				{
+                    if (cameraObject1 && cameraObject2)
+                    {
+						if (cameraObject1.position.x >= cameraObject2.position.x)
+						{
+                            if (cameraObject1.position.x > deathLineTargetPosX)
+                                deathLineTargetPosX = cameraObject1.position.x;
+                        }
+
+                        if (cameraObject1.position.x < cameraObject2.position.x)
+                        {
+                            if (cameraObject2.position.x > deathLineTargetPosX)
+                                deathLineTargetPosX = cameraObject2.position.x;
+                        }
+                    }
+                }
+
+
+				if (isGameOver == false)
+					deathLineTargetPosX += deathLineSpeed * Time.deltaTime;
+
+                Vector3 newVector3 = new Vector3(deathLineTargetPosX, deathLineObject.position.y, deathLineObject.position.z);
+
+                deathLineObject.position = Vector3.Lerp(deathLineObject.position, newVector3, Time.deltaTime * 0.5f);
+            }
+        }
 
 
 		// Create game lane
@@ -508,7 +555,7 @@ namespace RoadCrossing
 
 			// If we ran out of lives, run the game over function
 			if (lives <= 0) StartCoroutine(GameOver(0.5f));
-			else if (playerObjects[currentPlayer] && changeValue < 0)
+			else if (playerObjects1[currentPlayer1] && changeValue < 0)
 			{
 				// Stop all powerups
 				if (stopPowerupsOnDeath == true)
@@ -522,37 +569,37 @@ namespace RoadCrossing
 				}
 
 				// Show the respawn object, allowing it to move
-				if (respawnObject)
+				if (respawnObject1)
 				{
-					respawnObject.gameObject.SetActive(true);
+					respawnObject1.gameObject.SetActive(true);
 
-					respawnObject.position = playerObjects[currentPlayer].position;
+					respawnObject1.position = playerObjects1[currentPlayer1].position;
 
-					respawnObject.rotation = playerObjects[currentPlayer].rotation;
+					respawnObject1.rotation = playerObjects1[currentPlayer1].rotation;
 
-					respawnObject.SendMessage("Spawn");
+					respawnObject1.SendMessage("Spawn");
 				}
 
 				yield return new WaitForSeconds(respawnTime);
 
 				// Activate the player object
-				if (playerObjects[currentPlayer].gameObject.activeSelf == false)
+				if (playerObjects1[currentPlayer1].gameObject.activeSelf == false)
 				{
-					playerObjects[currentPlayer].gameObject.SetActive(true);
+					playerObjects1[currentPlayer1].gameObject.SetActive(true);
 
 					// Respawn the player object
-					playerObjects[currentPlayer].SendMessage("Spawn");
+					playerObjects1[currentPlayer1].SendMessage("Spawn");
 
 					// If there is a respawn object, place the player at its position, and hide the respawn object
-					if (respawnObject)
+					if (respawnObject1)
 					{
-						targetPosition = respawnObject.position;
+						targetPosition = respawnObject1.position;
 
-						playerObjects[currentPlayer].position = targetPosition;
+						playerObjects1[currentPlayer1].position = targetPosition;
 
-						playerObjects[currentPlayer].rotation = respawnObject.rotation;
+						playerObjects1[currentPlayer1].rotation = respawnObject1.rotation;
 
-						respawnObject.gameObject.SetActive(false);
+						respawnObject1.gameObject.SetActive(false);
 					}
 				}
 			}
@@ -624,89 +671,6 @@ namespace RoadCrossing
 		}
 
 		/// <summary>
-		/// Handles when the game is won.
-		/// </summary>
-		/// <returns>Yields for a period of time to allow execution to continue then continues through the victory text/gui display</returns>
-		/// <param name="delay">The delay of the yield in seconds</param>
-		IEnumerator Victory(float delay)
-		{
-			//Go through all the powerups and nullify their timers, making them end
-			for (index = 0; index < powerups.Length; index++)
-			{
-				//Set the duration of the powerup to 0
-				powerups[index].duration = 0;
-			}
-
-			//Activate the player object
-			playerObjects[currentPlayer].gameObject.SetActive(true);
-
-			//If there is a respawn object, place the player at its position, and hide the respawn object
-			if (respawnObject && respawnObject.gameObject.activeSelf == true)
-			{
-				targetPosition = respawnObject.position;
-
-				playerObjects[currentPlayer].position = targetPosition;
-
-				playerObjects[currentPlayer].rotation = respawnObject.rotation;
-
-				respawnObject.gameObject.SetActive(false);
-			}
-
-			// Call the victory function on the player
-			if (playerObjects[currentPlayer]) playerObjects[currentPlayer].SendMessage("Victory");
-
-			yield return new WaitForSeconds(delay);
-
-			isGameOver = true;
-
-			// Remove the pause and game screens
-			if (pauseCanvas)
-				Destroy(pauseCanvas.gameObject);
-
-			if (gameCanvas)
-				Destroy(gameCanvas.gameObject);
-
-			//Get the number of coins we have
-			int totalCoins = PlayerPrefs.GetInt(coinsPlayerPrefs, 0);
-
-			//Add to the number of coins we collected in this game
-			totalCoins += score;
-
-			//Record the number of coins we have
-			PlayerPrefs.SetInt(coinsPlayerPrefs, totalCoins);
-
-			// Show the game over screen
-			if (victoryCanvas)
-			{
-				// Show the game over screen
-				victoryCanvas.gameObject.SetActive(true);
-
-				// Write the score text
-				victoryCanvas.Find("TextScore").GetComponent<Text>().text = "SCORE " + score.ToString();
-
-				// Check if we got a high score
-				if (score > highScore)
-				{
-					highScore = score;
-
-					// Register the new high score
-#if UNITY_5_3 || UNITY_5_3_OR_NEWER
-					PlayerPrefs.SetInt(SceneManager.GetActiveScene().name + "_HighScore", score);
-#else
-					PlayerPrefs.SetInt(Application.loadedLevelName + "_HighScore", score);
-#endif
-				}
-
-				// Write the high sscore text
-				victoryCanvas.Find("TextHighScore").GetComponent<Text>().text = "HIGH SCORE " + highScore.ToString();
-			}
-
-			// If there is a source and a sound, play it from the source
-			if (soundSourceTag != string.Empty && soundVictory)
-				GameObject.FindGameObjectWithTag(soundSourceTag).GetComponent<AudioSource>().PlayOneShot(soundVictory);
-		}
-
-		/// <summary>
 		/// Reloads the current loaded level.
 		/// </summary>
 		void Restart()
@@ -734,37 +698,64 @@ namespace RoadCrossing
 		/// Activates the selected player, while deactivating all the others
 		/// </summary>
 		/// <param name="playerNumber">The number of the player to be activated</param>
-		void SetPlayer(int playerNumber)
+		void SetPlayer1(int playerNumber)
 		{
 			// Hide the respawn object
-			if (respawnObject) respawnObject.gameObject.SetActive(false);
+			if (respawnObject1) respawnObject1.gameObject.SetActive(false);
 
 			// Go through all the players, and hide each one except the current player
-			for (index = 0; index < playerObjects.Length; index++)
+			for (index = 0; index < playerObjects1.Length; index++)
 			{
 				if (index != playerNumber)
-					playerObjects[index].gameObject.SetActive(false);
+					playerObjects1[index].gameObject.SetActive(false);
 				else
-					playerObjects[index].gameObject.SetActive(true);
+					playerObjects1[index].gameObject.SetActive(true);
 			}
 		}
 
 		/// <summary>
-		/// Send a move command to the current player
+		/// same as SetPlayer1 but for the second player
 		/// </summary>
-		/// <param name="moveDirection">The direction the player should move in</param>
-		void MovePlayer(string moveDirection)
+		/// <param name="playerNumber"></param>
+        void SetPlayer2(int playerNumber)
+        {
+            // Hide the respawn object
+            if (respawnObject2) respawnObject2.gameObject.SetActive(false);
+
+
+            // Go through all the players, and hide each one except the current player
+            for (index = 0; index < playerObjects2.Length; index++)
+            {
+                if (index != playerNumber)
+                    playerObjects2[index].gameObject.SetActive(false);
+                else
+                    playerObjects2[index].gameObject.SetActive(true);
+            }
+        }
+
+        /// <summary>
+        /// Send a move command to the current player
+        /// </summary>
+        /// <param name="moveDirection">The direction the player should move in</param>
+        void MovePlayer1(string moveDirection)
 		{
 			// If there is a current player, send a move message with a direction
-			if (playerObjects[currentPlayer] && playerObjects[currentPlayer].gameObject.activeSelf == true) playerObjects[currentPlayer].SendMessage("Move", moveDirection);
-			else if (respawnObject && respawnObject.gameObject.activeSelf == true) respawnObject.SendMessage("Move", moveDirection);
+			if (playerObjects1[currentPlayer1] && playerObjects1[currentPlayer1].gameObject.activeSelf == true) playerObjects1[currentPlayer1].SendMessage("Move", moveDirection);
+			else if (respawnObject1 && respawnObject1.gameObject.activeSelf == true) respawnObject1.SendMessage("Move", moveDirection);
 		}
 
-		/// <summary>
-		/// Changes the speed of the game (Time.timeScale)
-		/// </summary>
-		/// <param name="setValue">The new speed of the game</param>
-		void SetGameSpeed(float setValue)
+        void MovePlayer2(string moveDirection)
+        {
+            // If there is a current player, send a move message with a direction
+            if (playerObjects2[currentPlayer1] && playerObjects2[currentPlayer1].gameObject.activeSelf == true) playerObjects2[currentPlayer1].SendMessage("Move", moveDirection);
+            else if (respawnObject2 && respawnObject2.gameObject.activeSelf == true) respawnObject2.SendMessage("Move", moveDirection);
+        }
+
+        /// <summary>
+        /// Changes the speed of the game (Time.timeScale)
+        /// </summary>
+        /// <param name="setValue">The new speed of the game</param>
+        void SetGameSpeed(float setValue)
 		{
 			gameSpeed = setValue;
 
@@ -780,18 +771,24 @@ namespace RoadCrossing
 		/// Changes the speed of the player
 		/// </summary>
 		/// <param name="setValue">The new speed of the player</param>
-		void SetPlayerSpeed(float setValue)
+		void SetPlayer1Speed(float setValue)
 		{
-			if (playerObjects[currentPlayer] && playerObjects[currentPlayer].gameObject.activeSelf == true) playerObjects[currentPlayer].SendMessage("SetPlayerSpeed", setValue);
-			else if (respawnObject && respawnObject.gameObject.activeSelf == true) respawnObject.SendMessage("SetPlayerSpeed", setValue);
+			if (playerObjects1[currentPlayer1] && playerObjects1[currentPlayer1].gameObject.activeSelf == true) playerObjects1[currentPlayer1].SendMessage("SetPlayer1Speed", setValue);
+			else if (respawnObject1 && respawnObject1.gameObject.activeSelf == true) respawnObject1.SendMessage("SetPlayer1Speed", setValue);
 		}
 
-		/// <summary>
-		/// Resets the position of the death line to the camera
-		/// </summary>
-		void ResetDeathLine()
+        void SetPlayer2Speed(float setValue)
+        {
+            if (playerObjects2[currentPlayer1] && playerObjects1[currentPlayer1].gameObject.activeSelf == true) playerObjects2[currentPlayer1].SendMessage("SetPlayer2Speed", setValue);
+            else if (respawnObject2 && respawnObject2.gameObject.activeSelf == true) respawnObject2.SendMessage("SetPlayer2Speed", setValue);
+        }
+
+        /// <summary>
+        /// Resets the position of the death line to the camera
+        /// </summary>
+        void ResetDeathLine()
 		{
-			if (deathLineObject && cameraObject) deathLineTargetPosX = cameraObject.position.x;
+			if (deathLineObject && cameraObject1) deathLineTargetPosX = cameraObject1.position.x;
 		}
 
 		/// <summary>

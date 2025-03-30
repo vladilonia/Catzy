@@ -62,14 +62,18 @@ namespace RoadCrossing
 		public AudioClip[] soundCoin;
 		public string soundSourceTag = "GameController";
 
-		/// <summary>
-		/// Start is only called once in the lifetime of the behaviour.
-		/// The difference between Awake and Start is that Start is only called if the script instance is enabled.
-		/// This allows you to delay any initialization code, until it is really needed.
-		/// Awake is always called before any Start functions.
-		/// This allows you to order initialization of scripts
-		/// </summary>
-		void Start()
+        // Used in coop to establish which player is affected
+        public string playerPrefix = "";
+
+
+        /// <summary>
+        /// Start is only called once in the lifetime of the behaviour.
+        /// The difference between Awake and Start is that Start is only called if the script instance is enabled.
+        /// This allows you to delay any initialization code, until it is really needed.
+        /// Awake is always called before any Start functions.
+        /// This allows you to order initialization of scripts
+        /// </summary>
+        void Start()
 		{
 			speedMultiplier = 1;
 
@@ -105,17 +109,17 @@ namespace RoadCrossing
 				if (Time.timeScale > 0)
 				{
 					// You can move left/right only if you are not already moving forward/backwards
-					if (Input.GetAxisRaw("Vertical") == 0)
+					if (Input.GetAxisRaw(playerPrefix + "Vertical") == 0)
 					{
 						// Moving right
-						if (Input.GetAxisRaw("Horizontal") > 0)
+						if (Input.GetAxisRaw(playerPrefix + "Horizontal") > 0)
 						{
 							// Move one step to the right
 							Move("right");
 						}
 
 						// Moving left
-						if (Input.GetAxisRaw("Horizontal") < 0)
+						if (Input.GetAxisRaw(playerPrefix + "Horizontal") < 0)
 						{
 							// Move one step to the left
 							Move("left");
@@ -123,17 +127,17 @@ namespace RoadCrossing
 					}
 
 					// You can move forward/backwards only if you are not already moving left/right
-					if (Input.GetAxisRaw("Horizontal") == 0)
+					if (Input.GetAxisRaw(playerPrefix + "Horizontal") == 0)
 					{
 						// Moving forward
-						if (Input.GetAxisRaw("Vertical") > 0)
+						if (Input.GetAxisRaw(playerPrefix + "Vertical") > 0)
 						{
 							// Move one step forward
 							Move("forward");
 						}
 
 						// Moving backwards
-						if (Input.GetAxisRaw("Vertical") < 0)
+						if (Input.GetAxisRaw(playerPrefix + "Vertical") < 0)
 						{
 							// Move one step backwards
 							Move("backward");
