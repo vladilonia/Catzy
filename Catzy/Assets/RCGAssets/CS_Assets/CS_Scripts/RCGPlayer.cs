@@ -115,6 +115,7 @@ namespace RoadCrossing
 						if (Input.GetAxisRaw(playerPrefix + "Horizontal") > 0)
 						{
 							// Move one step to the right
+							Debug.Log(playerPrefix + ": Horizontal");
 							Move("right");
 						}
 
@@ -122,6 +123,7 @@ namespace RoadCrossing
 						if (Input.GetAxisRaw(playerPrefix + "Horizontal") < 0)
 						{
 							// Move one step to the left
+							Debug.Log(playerPrefix + ": Horizontal");
 							Move("left");
 						}
 					}

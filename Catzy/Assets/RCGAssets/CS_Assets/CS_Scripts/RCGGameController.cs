@@ -1,6 +1,5 @@
-﻿#if UNITY_5_3 || UNITY_5_3_OR_NEWER
+﻿
 using UnityEngine.SceneManagement;
-#endif
 
 using System.Collections;
 using UnityEngine;
@@ -368,6 +367,7 @@ namespace RoadCrossing
                     cameraObject2.position = new Vector3(Mathf.Lerp(cameraObject2.position.x, playerObjects2[currentPlayer2].position.x, Time.deltaTime * 3), 0, Mathf.Lerp(cameraObject2.position.z, playerObjects2[currentPlayer2].position.z, Time.deltaTime * 3));
                 else if (respawnObject2 && respawnObject2.gameObject.activeSelf == true)
                     cameraObject2.position = new Vector3(Mathf.Lerp(cameraObject2.position.x, respawnObject2.position.x, Time.deltaTime * 3), 0, Mathf.Lerp(cameraObject2.position.z, respawnObject2.position.z, Time.deltaTime * 3));
+				Debug.Log("SHIT DOESNT WORK");
             }
 
             if (deathLineObject)
@@ -675,11 +675,7 @@ namespace RoadCrossing
 					highScore = score;
 
 					// Register the new high score
-#if UNITY_5_3 || UNITY_5_3_OR_NEWER
 					PlayerPrefs.SetInt(SceneManager.GetActiveScene().name + "_HighScore", score);
-#else
-					PlayerPrefs.SetInt(Application.loadedLevelName + "_HighScore", score);
-#endif
 				}
 
 				// Write the high sscore text
