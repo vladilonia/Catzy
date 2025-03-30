@@ -602,7 +602,28 @@ namespace RoadCrossing
 						respawnObject1.gameObject.SetActive(false);
 					}
 				}
-			}
+
+                // Activate the player object
+                if (playerObjects2[currentPlayer2].gameObject.activeSelf == false)
+                {
+                    playerObjects2[currentPlayer2].gameObject.SetActive(true);
+
+                    // Respawn the player object
+                    playerObjects2[currentPlayer2].SendMessage("Spawn");
+
+                    // If there is a respawn object, place the player at its position, and hide the respawn object
+                    if (respawnObject2)
+                    {
+                        targetPosition = respawnObject2.position;
+
+                        playerObjects2[currentPlayer2].position = targetPosition;
+
+                        playerObjects2[currentPlayer2].rotation = respawnObject2.rotation;
+
+                        respawnObject2.gameObject.SetActive(false);
+                    }
+                }
+            }
 		}
 
 		/// <summary>
