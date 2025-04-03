@@ -14,7 +14,7 @@ namespace RoadCrossing
 	/// </summary>
 	public class RCGGameController : MonoBehaviour
 	{
-		public int numOfPlayers;
+        public int numOfPlayers;
 
 		// The player
 		public Transform[] playerObjects1;
@@ -223,10 +223,11 @@ namespace RoadCrossing
 			// If the player object is not already assigned, Assign it from the "Player" tag
 			if (cameraObject1 == null)
 				cameraObject1 = GameObject.FindGameObjectWithTag("MainCamera").transform;
-
-            if (cameraObject2 == null)
-                cameraObject2 = GameObject.FindGameObjectWithTag("SecondCamera").transform;
-
+			if (numOfPlayers > 1)
+			{
+				if (cameraObject2 == null)
+					cameraObject2 = GameObject.FindGameObjectWithTag("SecondCamera").transform;
+			}
 
             //Create a few lanes at the start of the game
             if (lanesList.Length > 0)
@@ -354,21 +355,26 @@ namespace RoadCrossing
 
 			if (cameraObject1)
 			{
-				// Make the camera chase the player in all directions
-				if (playerObjects1[currentPlayer1] && playerObjects1[currentPlayer1].gameObject.activeSelf == true)
+                // Make the camera chase the player in all directions
+                if (playerObjects1[currentPlayer1] && playerObjects1[currentPlayer1].gameObject.activeSelf == true)
 					cameraObject1.position = new Vector3(Mathf.Lerp(cameraObject1.position.x, playerObjects1[currentPlayer1].position.x, Time.deltaTime * 3), 0, Mathf.Lerp(cameraObject1.position.z, playerObjects1[currentPlayer1].position.z, Time.deltaTime * 3));
 				else if (respawnObject1 && respawnObject1.gameObject.activeSelf == true)
 					cameraObject1.position = new Vector3(Mathf.Lerp(cameraObject1.position.x, respawnObject1.position.x, Time.deltaTime * 3), 0, Mathf.Lerp(cameraObject1.position.z, respawnObject1.position.z, Time.deltaTime * 3));	
 			}
-            if (cameraObject2)
-            {
-                // Make the camera chase the player in all directions
-                if (playerObjects2[currentPlayer2] && playerObjects2[currentPlayer2].gameObject.activeSelf == true)
-                    cameraObject2.position = new Vector3(Mathf.Lerp(cameraObject2.position.x, playerObjects2[currentPlayer2].position.x, Time.deltaTime * 3), 0, Mathf.Lerp(cameraObject2.position.z, playerObjects2[currentPlayer2].position.z, Time.deltaTime * 3));
-                else if (respawnObject2 && respawnObject2.gameObject.activeSelf == true)
-                    cameraObject2.position = new Vector3(Mathf.Lerp(cameraObject2.position.x, respawnObject2.position.x, Time.deltaTime * 3), 0, Mathf.Lerp(cameraObject2.position.z, respawnObject2.position.z, Time.deltaTime * 3));
-				Debug.Log("SHIT DOESNT WORK");
-            }
+
+			if (numOfPlayers > 1)
+			{
+				if (cameraObject2)
+				{
+					// Make the camera chase the player in all directions
+					if (playerObjects2[currentPlayer2] && playerObjects2[currentPlayer2].gameObject.activeSelf == true)
+					{
+						cameraObject2.position = new Vector3(Mathf.Lerp(cameraObject2.position.x, playerObjects2[currentPlayer2].position.x, Time.deltaTime * 3), 0, Mathf.Lerp(cameraObject2.position.z, playerObjects2[currentPlayer2].position.z, Time.deltaTime * 3));
+					}
+					else if (respawnObject2 && respawnObject2.gameObject.activeSelf == true)
+						cameraObject2.position = new Vector3(Mathf.Lerp(cameraObject2.position.x, respawnObject2.position.x, Time.deltaTime * 3), 0, Mathf.Lerp(cameraObject2.position.z, respawnObject2.position.z, Time.deltaTime * 3));
+				}
+			}
 
             if (deathLineObject)
             {

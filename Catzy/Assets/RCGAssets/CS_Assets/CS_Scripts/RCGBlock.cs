@@ -9,11 +9,14 @@ namespace RoadCrossing
 	/// </summary>
 	public class RCGBlock : MonoBehaviour
 	{
-		// The tag of the object that can touch this block
-		public string touchTargetTag = "Player";
+        // The tag of the object that can touch this block
+        public string touchTargetTag0 = "Player";
+        public string touchTargetTag1 = "Player1";
+        public string touchTargetTag2 = "Player2";
 
-		// An array of functions that run when this block is touched by the target
-		public TouchFunction[] touchFunctions;
+
+        // An array of functions that run when this block is touched by the target
+        public TouchFunction[] touchFunctions;
 
 		// Remove this object after a ceratin amount of touches
 		public int removeAfterTouches = 0;
@@ -45,25 +48,25 @@ namespace RoadCrossing
 		void OnTriggerEnter(Collider other)
 		{
 			// Check if the object that was touched has the correct tag
-			if (other.tag == touchTargetTag)
+			if (other.tag == touchTargetTag0 || other.tag == touchTargetTag1 || other.tag == touchTargetTag2)
 			{
 				// Go through the list of functions and runs them on the correct targets
 				foreach (var touchFunction in touchFunctions)
 				{
-					// Check that we have a target tag and function name before running
-					if (touchFunction.functionName != string.Empty)
+                    // Check that we have a target tag and function name before running
+                    if (touchFunction.functionName != string.Empty)
 					{
 						// If the targetTag is "TouchTarget", it means that we apply the function on the object that ouched this lock
-						if (touchFunction.targetTag == "TouchTarget")
+						if (touchFunction.targetTag == "Player" || touchFunction.targetTag == "Player1" || touchFunction.targetTag == "Player2")
 						{
 							// Run the function
 							other.SendMessage(touchFunction.functionName, transform);
 						}
 						else if (touchFunction.targetTag != string.Empty)    // Otherwise, apply the function on the target tag set in this touch function
 						{
-							// Run the function
-							GameObject.FindGameObjectWithTag(touchFunction.targetTag).SendMessage(touchFunction.functionName, touchFunction.functionParameter);
-						}
+                            // Run the function
+                            GameObject.FindGameObjectWithTag(touchFunction.targetTag).SendMessage(touchFunction.functionName, touchFunction.functionParameter);
+                        }
 					}
 				}
 

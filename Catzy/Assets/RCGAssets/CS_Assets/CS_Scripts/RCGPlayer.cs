@@ -115,7 +115,6 @@ namespace RoadCrossing
 						if (Input.GetAxisRaw(playerPrefix + "Horizontal") > 0)
 						{
 							// Move one step to the right
-							Debug.Log(playerPrefix + ": Horizontal");
 							Move("right");
 						}
 
@@ -123,7 +122,6 @@ namespace RoadCrossing
 						if (Input.GetAxisRaw(playerPrefix + "Horizontal") < 0)
 						{
 							// Move one step to the left
-							Debug.Log(playerPrefix + ": Horizontal");
 							Move("left");
 						}
 					}
@@ -391,7 +389,7 @@ namespace RoadCrossing
 		/// Destroys the player, and triggers the game over event
 		/// </summary>
 		/// <param name="deathType">Death effect type.</param>
-		void Die(int deathType)
+		public void Die(int deathType)
 		{
 			// If you are invulnerable, don't die
 			if (isInvulnerable == false)
@@ -417,7 +415,7 @@ namespace RoadCrossing
 		/// <summary>
 		/// Spawns the player
 		/// </summary>
-		void Spawn()
+		public void Spawn()
 		{
 			// Activate the player object
 			gameObject.SetActive(true);
@@ -430,7 +428,7 @@ namespace RoadCrossing
 		/// Changes the speed of the player
 		/// </summary>
 		/// <param name="setValue">The new speed of the player</param>
-		void SetPlayerSpeed(float setValue)
+		public void SetPlayerSpeed(float setValue)
 		{
 			speedMultiplier = setValue;
 
@@ -444,7 +442,7 @@ namespace RoadCrossing
 		/// <summary>
 		/// Detach this object from the object it is currently attached to
 		/// </summary>
-		void AttachToThis(Transform attachedObject)
+		public void AttachToThis(Transform attachedObject)
 		{
 			// Set the current attached object
 			attachedToObject = attachedObject;
@@ -482,7 +480,7 @@ namespace RoadCrossing
 		/// <summary>
 		/// Detach this object from the object it is currently attached to
 		/// </summary>
-		void Detach()
+		public void Detach()
 		{
 			// No object is attached
 			attachedToObject = null;
@@ -494,7 +492,7 @@ namespace RoadCrossing
 		/// <summary>
 		/// Runs when the player wins the level
 		/// </summary>
-		void Victory()
+		public void Victory()
 		{
 			isVictorious = true;
 
