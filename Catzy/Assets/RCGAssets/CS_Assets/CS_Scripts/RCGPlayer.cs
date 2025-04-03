@@ -1,6 +1,7 @@
-﻿using System.Collections;
+﻿using RoadCrossing.Types;
+using System.Collections;
 using UnityEngine;
-using RoadCrossing.Types;
+using UnityEngine.Scripting;
 
 namespace RoadCrossing
 {
@@ -331,12 +332,13 @@ namespace RoadCrossing
 			}
 		}
 
-		/// <summary>
-		/// Cancels the player's current move, bouncing it back to it's previous position 
-		/// </summary>
-		/// <returns><c>true</c> if this instance cancel move the specified moveDelayTime; otherwise, <c>false</c>.</returns>
-		/// <param name="moveDelayTime">Move delay time.</param>
-		void CancelMove(float moveDelayTime)
+        /// <summary>
+        /// Cancels the player's current move, bouncing it back to it's previous position 
+        /// </summary>
+        /// <returns><c>true</c> if this instance cancel move the specified moveDelayTime; otherwise, <c>false</c>.</returns>
+        /// <param name="moveDelayTime">Move delay time.</param>
+        [Preserve]
+        void CancelMove(float moveDelayTime)
 		{
 			// If there is an animation, play it
 			if (GetComponent<Animation>() && animationMove)
@@ -352,21 +354,23 @@ namespace RoadCrossing
 			moveDelay = moveDelayTime;
 		}
 
-		/// <summary>
-		/// Changes the height of the player. Used to allow the player to move to higher/lower platforms
-		/// </summary>
-		/// <param name="newHeight">The value of the new height, the y position of the player</param>
-		void ChangeHeight(Transform targetHeight)
+        /// <summary>
+        /// Changes the height of the player. Used to allow the player to move to higher/lower platforms
+        /// </summary>
+        /// <param name="newHeight">The value of the new height, the y position of the player</param>
+        [Preserve]
+        void ChangeHeight(Transform targetHeight)
 		{
 			targetPosition.y = moveHeight = targetHeight.position.y;
 		}
 
-		// This function animates a coin added to the player
-		/// <summary>
-		/// Adds the coin/changes score.
-		/// </summary>
-		/// <param name="addValue">value to add to score</param>
-		void AddCoin(int addValue)
+        // This function animates a coin added to the player
+        /// <summary>
+        /// Adds the coin/changes score.
+        /// </summary>
+        /// <param name="addValue">value to add to score</param>
+        [Preserve]
+        void AddCoin(int addValue)
 		{
 			gameController.SendMessage("ChangeScore", addValue);
 
@@ -384,12 +388,13 @@ namespace RoadCrossing
 				GameObject.FindGameObjectWithTag(soundSourceTag).GetComponent<AudioSource>().PlayOneShot(soundCoin[Mathf.FloorToInt(Random.value * soundCoin.Length)]);
 		}
 
-		// This function destroys the player, and triggers the game over event
-		/// <summary>
-		/// Destroys the player, and triggers the game over event
-		/// </summary>
-		/// <param name="deathType">Death effect type.</param>
-		public void Die(int deathType)
+        // This function destroys the player, and triggers the game over event
+        /// <summary>
+        /// Destroys the player, and triggers the game over event
+        /// </summary>
+        /// <param name="deathType">Death effect type.</param>
+        [Preserve]
+        public void Die(int deathType)
 		{
 			// If you are invulnerable, don't die
 			if (isInvulnerable == false)
@@ -397,8 +402,11 @@ namespace RoadCrossing
 				// If the player is attached to an object, detach from it
 				if (attachedToObject) Detach();
 
-				// Change the number of lives the player has, and check for game over
-				gameController.SendMessage("ChangeLives", -1);
+				// packing data for ChangeLives
+                object[] parameters = new object[] { -1, tag };
+
+                // Change the number of lives the player has, and check for game over
+                gameController.SendMessage("ChangeLives", parameters);
 
 				// If we have death effects...
 				if (deathEffect.Length > 0)
@@ -407,28 +415,31 @@ namespace RoadCrossing
 					Instantiate(deathEffect[deathType], thisTransform.position, thisTransform.rotation);
 				}
 
-				// Deactivate the player object
-				gameObject.SetActive(false);
+                // Deactivate the player object
+                gameObject.SetActive(false);
 			}
 		}
 
-		/// <summary>
-		/// Spawns the player
-		/// </summary>
-		public void Spawn()
+        /// <summary>
+        /// Spawns the player
+        /// </summary>
+        [Preserve]
+        void Spawn()
 		{
-			// Activate the player object
-			gameObject.SetActive(true);
+            // Activate the player object
+            gameObject.SetActive(true);
+            
 
-			// If there is an animation, update the animation speed based on speedMultiplier
-			if (GetComponent<Animation>() && animationSpawn) GetComponent<Animation>().Play(animationSpawn.name);
+            // If there is an animation, update the animation speed based on speedMultiplier
+            if (GetComponent<Animation>() && animationSpawn) GetComponent<Animation>().Play(animationSpawn.name);
 		}
 
-		/// <summary>
-		/// Changes the speed of the player
-		/// </summary>
-		/// <param name="setValue">The new speed of the player</param>
-		public void SetPlayerSpeed(float setValue)
+        /// <summary>
+        /// Changes the speed of the player
+        /// </summary>
+        /// <param name="setValue">The new speed of the player</param>
+        [Preserve]
+        void SetPlayerSpeed(float setValue)
 		{
 			speedMultiplier = setValue;
 
@@ -439,10 +450,11 @@ namespace RoadCrossing
 			if (GetComponent<Animation>() && animationCoin) GetComponent<Animation>()[animationCoin.name].speed = speed * speedMultiplier;
 		}
 
-		/// <summary>
-		/// Detach this object from the object it is currently attached to
-		/// </summary>
-		public void AttachToThis(Transform attachedObject)
+        /// <summary>
+        /// Detach this object from the object it is currently attached to
+        /// </summary>
+        [Preserve]
+        public void AttachToThis(Transform attachedObject)
 		{
 			// Set the current attached object
 			attachedToObject = attachedObject;
@@ -480,7 +492,7 @@ namespace RoadCrossing
 		/// <summary>
 		/// Detach this object from the object it is currently attached to
 		/// </summary>
-		public void Detach()
+		void Detach()
 		{
 			// No object is attached
 			attachedToObject = null;
@@ -492,7 +504,7 @@ namespace RoadCrossing
 		/// <summary>
 		/// Runs when the player wins the level
 		/// </summary>
-		public void Victory()
+		void Victory()
 		{
 			isVictorious = true;
 

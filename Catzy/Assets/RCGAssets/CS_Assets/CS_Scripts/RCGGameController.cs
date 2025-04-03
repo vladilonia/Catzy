@@ -141,10 +141,19 @@ namespace RoadCrossing
 		{
 			// Update the score and lives without changing them
 			ChangeScore(0);
-			StartCoroutine(ChangeLives(0));
+			if(numOfPlayers == 1)
+			{
+				object[] parameters = new object[] {0, "Player"};
+                StartCoroutine(ChangeLives(parameters));
+            }
+            else
+            {
+                object[] parameters = new object[] { 0, "Player1" };
+                StartCoroutine(ChangeLives(parameters));
+            }
 
-			// Hide unnecessary canvases
-			if (gameOverCanvas) gameOverCanvas.gameObject.SetActive(false);
+            // Hide unnecessary canvases
+            if (gameOverCanvas) gameOverCanvas.gameObject.SetActive(false);
 			if (victoryCanvas) gameOverCanvas.gameObject.SetActive(false);
 
 			// Get the highscore for the player
@@ -217,7 +226,7 @@ namespace RoadCrossing
 			SetPlayer1(currentPlayer1);
 			if(numOfPlayers > 1)
 			{
-				SetPlayer2(1);
+				SetPlayer2(currentPlayer2);
 			}
 
 			// If the player object is not already assigned, Assign it from the "Player" tag
@@ -551,8 +560,12 @@ namespace RoadCrossing
 		/// Changes the number of lives the player has. If 0, game over function is called
 		/// </summary>
 		/// <param name="changeValue">Value to change in lives number.</param>
-		IEnumerator ChangeLives(int changeValue)
+		IEnumerator ChangeLives(object[] parameters)
 		{
+			//de-packing recieved data
+			//playerTag is used to distinguish which player is dead
+			int changeValue = (int)parameters[0];
+			string playerTag = (string)parameters[1];
 			// Change the number of lives the player has
 			lives += changeValue;
 
@@ -561,76 +574,156 @@ namespace RoadCrossing
 
 			// If we ran out of lives, run the game over function
 			if (lives <= 0) StartCoroutine(GameOver(0.5f));
-			else if (playerObjects1[currentPlayer1] && changeValue < 0)
+			else if (numOfPlayers > 1)
 			{
-				// Stop all powerups
-				if (stopPowerupsOnDeath == true)
-				{
-					// Go through all the powerups and nullify their timers, making them end
-					for (index = 0; index < powerups.Length; index++)
-					{
-						// Set the duration of the powerup to 0
-						powerups[index].duration = 0;
-					}
-				}
-
-				// Show the respawn object, allowing it to move
-				if (respawnObject1)
-				{
-					respawnObject1.gameObject.SetActive(true);
-
-					respawnObject1.position = playerObjects1[currentPlayer1].position;
-
-					respawnObject1.rotation = playerObjects1[currentPlayer1].rotation;
-
-					respawnObject1.SendMessage("Spawn");
-				}
-
-				yield return new WaitForSeconds(respawnTime);
-
-				// Activate the player object
-				if (playerObjects1[currentPlayer1].gameObject.activeSelf == false)
-				{
-					playerObjects1[currentPlayer1].gameObject.SetActive(true);
-
-					// Respawn the player object
-					playerObjects1[currentPlayer1].SendMessage("Spawn");
-
-					// If there is a respawn object, place the player at its position, and hide the respawn object
-					if (respawnObject1)
-					{
-						targetPosition = respawnObject1.position;
-
-						playerObjects1[currentPlayer1].position = targetPosition;
-
-						playerObjects1[currentPlayer1].rotation = respawnObject1.rotation;
-
-						respawnObject1.gameObject.SetActive(false);
-					}
-				}
-
-                // Activate the player object
-                if (playerObjects2[currentPlayer2].gameObject.activeSelf == false)
+                if (playerObjects1[currentPlayer1] && changeValue < 0 && playerObjects1[currentPlayer1].tag == playerTag)
                 {
-                    playerObjects2[currentPlayer2].gameObject.SetActive(true);
+                    // Stop all powerups
+                    if (stopPowerupsOnDeath == true)
+                    {
+                        // Go through all the powerups and nullify their timers, making them end
+                        for (index = 0; index < powerups.Length; index++)
+                        {
+                            // Set the duration of the powerup to 0
+                            powerups[index].duration = 0;
+                        }
+                    }
 
-                    // Respawn the player object
-                    playerObjects2[currentPlayer2].SendMessage("Spawn");
+                    // Show the respawn object, allowing it to move
+                    if (respawnObject1)
+                    {
+                        respawnObject1.gameObject.SetActive(true);
 
-                    // If there is a respawn object, place the player at its position, and hide the respawn object
+                        respawnObject1.position = playerObjects1[currentPlayer1].position;
+
+                        respawnObject1.rotation = playerObjects1[currentPlayer1].rotation;
+
+                        respawnObject1.SendMessage("Spawn");
+                    }
+
+                    yield return new WaitForSeconds(respawnTime);
+
+                    // Activate the player object
+                    if (playerObjects1[currentPlayer1].gameObject.activeSelf == false && playerObjects1[currentPlayer1].tag == playerTag)
+                    {
+                        playerObjects1[currentPlayer1].gameObject.SetActive(true);
+
+                        // Respawn the player object
+                        playerObjects1[currentPlayer1].SendMessage("Spawn");
+
+                        // If there is a respawn object, place the player at its position, and hide the respawn object
+                        if (respawnObject1)
+                        {
+                            targetPosition = respawnObject1.position;
+
+                            playerObjects1[currentPlayer1].position = targetPosition;
+
+                            playerObjects1[currentPlayer1].rotation = respawnObject1.rotation;
+
+                            respawnObject1.gameObject.SetActive(false);
+                        }
+                    }
+                }
+                else if (playerObjects2[currentPlayer2] && changeValue < 0 && playerObjects2[currentPlayer2].tag == playerTag)
+                {
+                    // Stop all powerups
+                    if (stopPowerupsOnDeath == true)
+                    {
+                        // Go through all the powerups and nullify their timers, making them end
+                        for (index = 0; index < powerups.Length; index++)
+                        {
+                            // Set the duration of the powerup to 0
+                            powerups[index].duration = 0;
+                        }
+                    }
+
+                    // Show the respawn object, allowing it to move
                     if (respawnObject2)
                     {
-                        targetPosition = respawnObject2.position;
+                        respawnObject2.gameObject.SetActive(true);
 
-                        playerObjects2[currentPlayer2].position = targetPosition;
+                        respawnObject2.position = playerObjects2[currentPlayer2].position;
 
-                        playerObjects2[currentPlayer2].rotation = respawnObject2.rotation;
+                        respawnObject2.rotation = playerObjects2[currentPlayer2].rotation;
 
-                        respawnObject2.gameObject.SetActive(false);
+                        respawnObject2.SendMessage("Spawn");
+                    }
+
+                    yield return new WaitForSeconds(respawnTime);
+                    // Activate the player object
+                    if (playerObjects2[currentPlayer2].gameObject.activeSelf == false && playerObjects2[currentPlayer2].tag == playerTag)
+                    {
+                        playerObjects2[currentPlayer2].gameObject.SetActive(true);
+
+                        // Respawn the player object
+                        playerObjects2[currentPlayer2].SendMessage("Spawn");
+
+                        // If there is a respawn object, place the player at its position, and hide the respawn object
+                        if (respawnObject2)
+                        {
+                            targetPosition = respawnObject2.position;
+
+                            playerObjects2[currentPlayer2].position = targetPosition;
+
+                            playerObjects2[currentPlayer2].rotation = respawnObject2.rotation;
+
+                            respawnObject2.gameObject.SetActive(false);
+                        }
                     }
                 }
             }
-		}
+            else if (numOfPlayers == 1)
+            {
+                if (playerObjects1[currentPlayer1] && changeValue < 0)
+                {
+                    // Stop all powerups
+                    if (stopPowerupsOnDeath == true)
+                    {
+                        // Go through all the powerups and nullify their timers, making them end
+                        for (index = 0; index < powerups.Length; index++)
+                        {
+                            // Set the duration of the powerup to 0
+                            powerups[index].duration = 0;
+                        }
+                    }
+
+                    // Show the respawn object, allowing it to move
+                    if (respawnObject1)
+                    {
+                        respawnObject1.gameObject.SetActive(true);
+
+                        respawnObject1.position = playerObjects1[currentPlayer1].position;
+
+                        respawnObject1.rotation = playerObjects1[currentPlayer1].rotation;
+
+                        respawnObject1.SendMessage("Spawn");
+                    }
+
+                    yield return new WaitForSeconds(respawnTime);
+
+                    // Activate the player object
+                    if (playerObjects1[currentPlayer1].gameObject.activeSelf == false)
+                    {
+                        playerObjects1[currentPlayer1].gameObject.SetActive(true);
+
+                        // Respawn the player object
+                        playerObjects1[currentPlayer1].SendMessage("Spawn");
+
+                        // If there is a respawn object, place the player at its position, and hide the respawn object
+                        if (respawnObject1)
+                        {
+                            targetPosition = respawnObject1.position;
+
+                            playerObjects1[currentPlayer1].position = targetPosition;
+
+                            playerObjects1[currentPlayer1].rotation = respawnObject1.rotation;
+
+                            respawnObject1.gameObject.SetActive(false);
+                        }
+                    }
+                }
+            }
+        }
 
 		/// <summary>
 		/// Handles when the game is over.

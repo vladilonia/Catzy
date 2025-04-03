@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using RoadCrossing.Types;
+using System.Reflection;
 
 namespace RoadCrossing
 {
@@ -50,24 +51,21 @@ namespace RoadCrossing
 			// Check if the object that was touched has the correct tag
 			if (other.tag == touchTargetTag0 || other.tag == touchTargetTag1 || other.tag == touchTargetTag2)
 			{
-				// Go through the list of functions and runs them on the correct targets
-				foreach (var touchFunction in touchFunctions)
+                // Go through the list of functions and runs them on the correct targets
+                foreach (var touchFunction in touchFunctions)
 				{
                     // Check that we have a target tag and function name before running
-                    if (touchFunction.functionName != string.Empty)
+                    if (touchFunction.functionName != string.Empty && touchFunction.targetTag == other.tag)
 					{
-						// If the targetTag is "TouchTarget", it means that we apply the function on the object that ouched this lock
-						if (touchFunction.targetTag == "Player" || touchFunction.targetTag == "Player1" || touchFunction.targetTag == "Player2")
+						if(touchFunction.functionName != "AttachToThis")
 						{
-							// Run the function
-							other.SendMessage(touchFunction.functionName, transform);
-						}
-						else if (touchFunction.targetTag != string.Empty)    // Otherwise, apply the function on the target tag set in this touch function
-						{
-                            // Run the function
                             GameObject.FindGameObjectWithTag(touchFunction.targetTag).SendMessage(touchFunction.functionName, touchFunction.functionParameter);
                         }
-					}
+						else
+						{
+                            GameObject.FindGameObjectWithTag(touchFunction.targetTag).SendMessage(touchFunction.functionName, transform);
+                        }
+                    }
 				}
 
 				// If there is an animation, play it
