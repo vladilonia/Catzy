@@ -65,6 +65,7 @@ namespace RoadCrossing
                             }
                             else
                             {
+								Debug.Log(touchFunction.functionName);
                                 GameObject.FindGameObjectWithTag(touchFunction.targetTag).SendMessage(touchFunction.functionName, transform);
                             }
                         }
