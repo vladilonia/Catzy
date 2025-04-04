@@ -1,6 +1,4 @@
-﻿#if UNITY_5_3 || UNITY_5_3_OR_NEWER
-using UnityEngine.SceneManagement;
-#endif
+﻿using UnityEngine.SceneManagement;
 
 using UnityEngine;
 
@@ -26,11 +24,7 @@ namespace RoadCrossing
 		/// <param name="levelName">Level name.</param>
 		public void LoadLevel(string levelName)
 		{
-#if UNITY_5_3 || UNITY_5_3_OR_NEWER
 			SceneManager.LoadScene(levelName);
-#else
-			Application.LoadLevel(levelName);
-#endif
 		}
 
 		/// <summary>
@@ -38,11 +32,7 @@ namespace RoadCrossing
 		/// </summary>
 		public void RestartLevel()
 		{
-#if UNITY_5_3 || UNITY_5_3_OR_NEWER
 			SceneManager.LoadScene(SceneManager.GetActiveScene().name);
-#else
-			Application.LoadLevel(Application.loadedLevelName);
-#endif
 		}
 	}
 }
