@@ -21,8 +21,8 @@ namespace RoadCrossing
 		public float speed = 2.8f;
 		static float speedMultiplier = 1;
 		internal bool isMoving = false;
-		internal Vector3 previousPosition;
-		internal Vector3 targetPosition;
+		Vector3 previousPosition;
+		Vector3 targetPosition;
 
 		// The movement limits object. This object contains some colliders that bounce the player back into the game area
 		public Transform moveLimits;
@@ -190,7 +190,7 @@ namespace RoadCrossing
 		/// <param name="currentMove">Move direction.</param>
 		void Move(string moveDirection)
 		{
-			if (isVictorious == false)
+            if (isVictorious == false)
 			{
 				if (isMoving == false && moveDelay <= 0)
 				{
@@ -202,7 +202,10 @@ namespace RoadCrossing
 					// The object is moving
 					isMoving = true;
 
-					switch (currentMove.ToLower())
+                    // Register the last position the player was at, so we can return to it if the path is blocked
+                    previousPosition = thisTransform.position;
+
+                    switch (currentMove.ToLower())
 					{
 						case "forward":
 							// Turn to the front
@@ -217,9 +220,6 @@ namespace RoadCrossing
 							targetPosition.x = Mathf.Round(targetPosition.x);
 							targetPosition.z = Mathf.Round(targetPosition.z);
 
-							// Register the last position the player was at, so we can return to it if the path is blocked
-							previousPosition = thisTransform.position;
-
 							break;
 
 						case "backward":
@@ -227,9 +227,6 @@ namespace RoadCrossing
 							newEulerAngle = new Vector3();
 							newEulerAngle.y = 180;
 							thisTransform.eulerAngles = newEulerAngle;
-
-							// Register the last position the player was at, so we can return to it if the path is blocked
-							previousPosition = thisTransform.position;
 
 							// Make sure the player lands on the grid 
 							targetPosition.x = Mathf.Round(targetPosition.x);
@@ -246,9 +243,6 @@ namespace RoadCrossing
 							newEulerAngle.y = 90;
 							thisTransform.eulerAngles = newEulerAngle;
 
-							// Register the last position the player was at, so we can return to it if the path is blocked
-							previousPosition = thisTransform.position;
-
 							// Make sure the player lands on the grid 
 							targetPosition.x = Mathf.Round(targetPosition.x);
 							targetPosition.z = Mathf.Round(targetPosition.z);
@@ -263,9 +257,6 @@ namespace RoadCrossing
 							newEulerAngle = new Vector3();
 							newEulerAngle.y = -90;
 							thisTransform.eulerAngles = newEulerAngle;
-
-							// Register the last position the player was at, so we can return to it if the path is blocked
-							previousPosition = thisTransform.position;
 
 							// Make sure the player lands on the grid 
 							targetPosition.x = Mathf.Round(targetPosition.x);
@@ -286,9 +277,6 @@ namespace RoadCrossing
 							targetPosition = thisTransform.position;
 
 							targetPosition.Normalize();
-
-							// Register the last position the player was at, so we can return to it if the path is blocked
-							previousPosition = thisTransform.position;
 
 							break;
 					}
@@ -313,6 +301,7 @@ namespace RoadCrossing
 
 						GetComponent<Animation>().Stop();
 
+						Debug.Log(animationMove.name);
 						// Play the animation
 						GetComponent<Animation>().Play(animationMove.name);
 
@@ -340,18 +329,20 @@ namespace RoadCrossing
         [Preserve]
         void CancelMove(float moveDelayTime)
 		{
-			// If there is an animation, play it
-			if (GetComponent<Animation>() && animationMove)
+			Debug.Log("Previous: " + previousPosition + " | " + "Next: " + targetPosition);
+
+            // Set the previous position as the target position to move to
+            targetPosition = previousPosition;
+
+            // If there is an animation, play it
+            if (GetComponent<Animation>() && animationMove)
 			{
 				// Set the animation speed base on the movement speed
 				GetComponent<Animation>()[animationMove.name].speed = -speed * speedMultiplier;
 			}
 
-			// Set the previous position as the target position to move to
-			targetPosition = previousPosition;
-
-			// If there is a move delay, prevent movement for a while
-			moveDelay = moveDelayTime;
+            // If there is a move delay, prevent movement for a while
+            moveDelay = moveDelayTime;
 		}
 
         /// <summary>
