@@ -22,7 +22,7 @@ namespace RoadCrossing
 		static float speedMultiplier = 1;
 		internal bool isMoving = false;
 		internal Vector3 previousPosition;
-		static Vector3 targetPosition;
+		internal Vector3 targetPosition;
 
 		// The movement limits object. This object contains some colliders that bounce the player back into the game area
 		public Transform moveLimits;
@@ -110,17 +110,17 @@ namespace RoadCrossing
 				if (Time.timeScale > 0)
 				{
 					// You can move left/right only if you are not already moving forward/backwards
-					if (Input.GetAxisRaw(playerPrefix + "Vertical") == 0)
+					if (Input.GetAxis(playerPrefix + "Vertical") == 0)
 					{
-						// Moving right
-						if (Input.GetAxisRaw(playerPrefix + "Horizontal") > 0)
+                        // Moving right
+                        if (Input.GetAxis(playerPrefix + "Horizontal") > 0)
 						{
-							// Move one step to the right
-							Move("right");
+                            // Move one step to the right
+                            Move("right");
 						}
 
 						// Moving left
-						if (Input.GetAxisRaw(playerPrefix + "Horizontal") < 0)
+						if (Input.GetAxis(playerPrefix + "Horizontal") < 0)
 						{
 							// Move one step to the left
 							Move("left");
@@ -128,17 +128,17 @@ namespace RoadCrossing
 					}
 
 					// You can move forward/backwards only if you are not already moving left/right
-					if (Input.GetAxisRaw(playerPrefix + "Horizontal") == 0)
+					if (Input.GetAxis(playerPrefix + "Horizontal") == 0)
 					{
 						// Moving forward
-						if (Input.GetAxisRaw(playerPrefix + "Vertical") > 0)
+						if (Input.GetAxis(playerPrefix + "Vertical") > 0)
 						{
 							// Move one step forward
 							Move("forward");
 						}
 
 						// Moving backwards
-						if (Input.GetAxisRaw(playerPrefix + "Vertical") < 0)
+						if (Input.GetAxis(playerPrefix + "Vertical") < 0)
 						{
 							// Move one step backwards
 							Move("backward");
@@ -149,8 +149,8 @@ namespace RoadCrossing
 				// If the player is moving, move it to its target
 				if (isMoving == true)
 				{
-					// Keep moving towards the target position until we reach it
-					if (attachedToObject == null)
+                    // Keep moving towards the target position until we reach it
+                    if (attachedToObject == null)
 					{
 						if (Vector3.Distance(thisTransform.position, targetPosition) > 0.1)
 						{

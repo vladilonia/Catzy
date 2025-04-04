@@ -5,6 +5,7 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 using RoadCrossing.Types;
+using System.Diagnostics.CodeAnalysis;
 
 namespace RoadCrossing
 {
@@ -157,11 +158,7 @@ namespace RoadCrossing
 			if (victoryCanvas) gameOverCanvas.gameObject.SetActive(false);
 
 			// Get the highscore for the player
-#if UNITY_5_3 || UNITY_5_3_OR_NEWER
 			highScore = PlayerPrefs.GetInt(SceneManager.GetActiveScene().name + "_HighScore", 0);
-#else
-			highScore = PlayerPrefs.GetInt(Application.loadedLevelName + "_HighScore", 0);
-#endif
 
 			// Calculate the chances for the objects to drop
 			int totalLanes = 0;
@@ -574,8 +571,10 @@ namespace RoadCrossing
 
 			// If we ran out of lives, run the game over function
 			if (lives <= 0) StartCoroutine(GameOver(0.5f));
+			// what game should do if it is coop session 
 			else if (numOfPlayers > 1)
 			{
+				// check if the first player has died and his skin is still visible
                 if (playerObjects1[currentPlayer1] && changeValue < 0 && playerObjects1[currentPlayer1].tag == playerTag)
                 {
                     // Stop all powerups
@@ -624,6 +623,7 @@ namespace RoadCrossing
                         }
                     }
                 }
+                // check if the second player has died and his skin is still visible
                 else if (playerObjects2[currentPlayer2] && changeValue < 0 && playerObjects2[currentPlayer2].tag == playerTag)
                 {
                     // Stop all powerups
@@ -672,8 +672,10 @@ namespace RoadCrossing
                     }
                 }
             }
-            else if (numOfPlayers == 1)
+			//what game should do if it is a singleplayer session
+            else if (numOfPlayers < 2)
             {
+				//check if the player has died and his skin is still visible
                 if (playerObjects1[currentPlayer1] && changeValue < 0)
                 {
                     // Stop all powerups
@@ -791,11 +793,7 @@ namespace RoadCrossing
 		/// </summary>
 		void Restart()
 		{
-#if UNITY_5_3 || UNITY_5_3_OR_NEWER
 			SceneManager.LoadScene(SceneManager.GetActiveScene().name);
-#else
-			Application.LoadLevel(Application.loadedLevelName);
-#endif
 		}
 
 		/// <summary>
@@ -803,11 +801,7 @@ namespace RoadCrossing
 		/// </summary>
 		void MainMenu()
 		{
-#if UNITY_5_3 || UNITY_5_3_OR_NEWER
 			SceneManager.LoadScene(mainMenuLevelName);
-#else
-			Application.LoadLevel(mainMenuLevelName);
-#endif
 		}
 
 		/// <summary>
@@ -863,7 +857,7 @@ namespace RoadCrossing
         void MovePlayer2(string moveDirection)
         {
             // If there is a current player, send a move message with a direction
-            if (playerObjects2[currentPlayer1] && playerObjects2[currentPlayer1].gameObject.activeSelf == true) playerObjects2[currentPlayer1].SendMessage("Move", moveDirection);
+            if (playerObjects2[currentPlayer2] && playerObjects2[currentPlayer2].gameObject.activeSelf == true) playerObjects2[currentPlayer2].SendMessage("Move", moveDirection);
             else if (respawnObject2 && respawnObject2.gameObject.activeSelf == true) respawnObject2.SendMessage("Move", moveDirection);
         }
 
@@ -895,7 +889,7 @@ namespace RoadCrossing
 
         void SetPlayer2Speed(float setValue)
         {
-            if (playerObjects2[currentPlayer1] && playerObjects1[currentPlayer1].gameObject.activeSelf == true) playerObjects2[currentPlayer1].SendMessage("SetPlayer2Speed", setValue);
+            if (playerObjects2[currentPlayer2] && playerObjects2[currentPlayer2].gameObject.activeSelf == true) playerObjects2[currentPlayer2].SendMessage("SetPlayer2Speed", setValue);
             else if (respawnObject2 && respawnObject2.gameObject.activeSelf == true) respawnObject2.SendMessage("SetPlayer2Speed", setValue);
         }
 

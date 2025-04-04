@@ -49,21 +49,24 @@ namespace RoadCrossing
 		void OnTriggerEnter(Collider other)
 		{
 			// Check if the object that was touched has the correct tag
-			if (other.tag == touchTargetTag0 || other.tag == touchTargetTag1 || other.tag == touchTargetTag2)
+			if (other.tag == touchTargetTag0 || other.tag == touchTargetTag1 || other.tag == touchTargetTag2 || other.tag == "GameController")
 			{
-                // Go through the list of functions and runs them on the correct targets
+                // Go through the list of functions and run only those with a tag of a touched object
                 foreach (var touchFunction in touchFunctions)
 				{
-                    // Check that we have a target tag and function name before running
-                    if (touchFunction.functionName != string.Empty && touchFunction.targetTag == other.tag)
+					if(touchFunction.targetTag == other.tag)
 					{
-						if(touchFunction.functionName != "AttachToThis")
-						{
-                            GameObject.FindGameObjectWithTag(touchFunction.targetTag).SendMessage(touchFunction.functionName, touchFunction.functionParameter);
-                        }
-						else
-						{
-                            GameObject.FindGameObjectWithTag(touchFunction.targetTag).SendMessage(touchFunction.functionName, transform);
+                        // Check that we have a target tag and function name before running
+                        if (touchFunction.functionName != string.Empty && touchFunction.targetTag == other.tag)
+                        {
+                            if (touchFunction.functionName != "AttachToThis")
+                            {
+                                GameObject.FindGameObjectWithTag(touchFunction.targetTag).SendMessage(touchFunction.functionName, touchFunction.functionParameter);
+                            }
+                            else
+                            {
+                                GameObject.FindGameObjectWithTag(touchFunction.targetTag).SendMessage(touchFunction.functionName, transform);
+                            }
                         }
                     }
 				}
